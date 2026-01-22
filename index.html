@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="FIRE-Bench evaluates AI research agents on their ability to autonomously rediscover established scientific findings from recent ML research.">
+  <meta name="keywords" content="FIRE-Bench, AI Research Agents, Scientific Discovery, LLM Evaluation, Benchmark">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FIRE-Bench: Evaluating Research Agents on the Rediscovery of Scientific Insights</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css?v=4">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<!-- Sticky Navigation -->
+<nav class="navbar is-fixed-top main-nav" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item nav-logo" href="#">
+        <span class="fire-logo">🔥</span> FIRE-Bench
+      </a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="mainNavbar">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="mainNavbar" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#framework">Framework</a>
+        <a class="navbar-item" href="#method">Method</a>
+        <a class="navbar-item" href="#leaderboard">Leaderboard</a>
+        <a class="navbar-item" href="#tasks">Tasks</a>
+        <a class="navbar-item" href="#analysis">Analysis</a>
+        <a class="navbar-item" href="#BibTeX">Cite</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- 1. HERO SECTION -->
+<section class="hero hero-header" id="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            <span class="fire-logo">🔥</span> FIRE-Bench
+          </h1>
+          <p class="hero-tagline">
+            Can AI agents rediscover scientific insights? We benchmark full-cycle research automation with verifiable evaluation.
+          </p>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block">
+              Zhen Wang*<sup>1</sup>, Fan Bai*<sup>2</sup>, Zhongyan Luo*<sup>1</sup>, Jinyan Su<sup>3</sup>, Kaiser Sun<sup>2</sup>, Weiqi Liu<sup>1</sup>, Albert Chen<sup>1</sup>, Jieyuan Liu<sup>1</sup>, Kun Zhou<sup>1</sup>, Claire Cardie<sup>3</sup>, Mark Dredze<sup>2</sup>, Eric P. Xing<sup>4</sup>, Zhiting Hu<sup>1</sup>
+            </span>
+          </div>
+          <div class="is-size-7 publication-affiliations">
+            <span class="affiliation-block"><sup>1</sup>UC San Diego, <sup>2</sup>Johns Hopkins University, <sup>3</sup>Cornell University, <sup>4</sup>MBZUAI</span>
+            <br>
+            <span class="affiliation-note">* Equal Contribution</span>
+          </div>
+
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                <span>Paper</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="ai ai-arxiv"></i></span>
+                <span>arXiv</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fab fa-github"></i></span>
+                <span>Code</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-database"></i></span>
+                <span>Benchmark</span>
+              </a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 2. FRAMEWORK ANIMATION VIDEO -->
+<section class="section video-section" id="framework">
+  <div class="container is-max-widescreen">
+    <div class="video-container">
+      <h3 class="video-title has-text-centered">Framework Animation</h3>
+      <p class="video-description has-text-centered">Papers are parsed into tree-structured tasks, where each node represents an executable, verifiable research step.</p>
+      <video class="framework-video" controls autoplay muted loop playsinline>
+        <source src="./static/videos/fire-bench-framework.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+</section>
+
+
+<!-- 3. METHOD SECTION -->
+<section class="section method-section" id="method">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Methodology</h2>
+    <p class="section-subtitle has-text-centered">
+      From Papers to Verifiable Discovery Tasks
+    </p>
+
+    <div class="method-content">
+      <p>
+        FIRE-Bench is constructed through <strong>research-problem decomposition</strong>, a process that transforms high-quality 
+        empirical analysis papers into verifiable benchmark tasks. This approach balances exploratory freedom (avoiding tasks that 
+        are too broad to benchmark) with empirical verifiability (avoiding tasks that are too narrow to allow genuine exploration).
+      </p>
+      <p>
+        We formalize each paper \(\mathcal{P}\) as a hierarchical research-problem tree \(\mathcal{T}(\mathcal{P})\) 
+        that encodes the authors' reasoning trajectory, from broad research questions (e.g., "Do LLMs contain biases?") to specific 
+        experimental tasks. The tree is extracted via an automated parser: \(E_\phi: \Sigma^* \rightarrow \mathcal{T},\; \mathcal{T}(\mathcal{P}) = E_\phi(\mathcal{P})\). 
+        It consists of three node types: Root node \(r\) captures the overarching 
+        research problem from the paper's title or abstract; Intermediate nodes \(v_i \in \mathcal{V}\) represent narrower 
+        subproblems that decompose the main question (e.g., "Do LLMs exhibit racial bias in medical report generation?"); Leaf nodes 
+        \(l_j \in \mathcal{L}\) specify fully executable experiments with datasets \(\mathcal{D}_j\), 
+        methods \(\mathcal{M}_j\), and evaluation metrics \(\mathcal{C}_j\), each mapping directly to 
+        figures or tables in the original paper.
+      </p>
+      <p>
+        From each tree, we create a <strong>"constrained rediscovery" problem</strong> by first identifying a target leaf node 
+        \(l^* \in \mathcal{L}\) corresponding to a central finding, then selecting an intermediate node 
+        \(v^* \in \mathcal{V}\) that balances openness with verifiability. The agent receives only the research question 
+        from \(v^*\), while the methodology and conclusion from \(l^*\) are withheld. 
+        The paper's published findings serve as ground truth for evaluation.
+      </p>
+      <p>
+        We evaluate agent performance through claim-level analysis: both agent conclusions \(C_{\text{agent}}\) 
+        and ground truth \(C_{\text{gt}}\) are decomposed into atomic, verifiable claims. We then compute 
+        \(\text{Precision}\), \(\text{Recall}\), and \(F_1\) as the overall performance metric.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 4. HIGHLIGHTS SECTION -->
+<section class="section highlights-section">
+  <div class="container is-max-desktop">
+    <div class="highlights-grid">
+      <div class="highlight-card">
+        <div class="highlight-stat">30</div>
+        <div class="highlight-title">Research Tasks</div>
+        <div class="highlight-desc">Derived from ICLR, ICML, and NeurIPS papers (2024-2025)</div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-stat">✓</div>
+        <div class="highlight-title">Verifiable Evaluation</div>
+        <div class="highlight-desc">Ground truth from published papers enables objective scoring</div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-stat">4</div>
+        <div class="highlight-title">Research Stages</div>
+        <div class="highlight-desc">Plan → Implement → Execute → Analyze the full research cycle</div>
+      </div>
+      <div class="highlight-card">
+        <div class="highlight-stat">14</div>
+        <div class="highlight-title">Error Categories</div>
+        <div class="highlight-desc">Fine-grained taxonomy reveals where agents fail</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 4. LEADERBOARD SECTION -->
+<section class="section leaderboard-section" id="leaderboard">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Leaderboard</h2>
+    <p class="section-subtitle has-text-centered">
+      Mean scores with standard deviation across three independent trials on all 30 tasks
+    </p>
+
+    <table class="performance-table">
+      <thead>
+        <tr>
+          <th class="col-rank">#</th>
+          <th class="col-agent">Agent</th>
+          <th class="col-metric">Precision</th>
+          <th class="col-metric">Recall</th>
+          <th class="col-metric">F₁ Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="best-row">
+          <td class="rank-cell">1</td>
+          <td class="agent-cell">
+            <span class="agent-name">Claude Code</span>
+            <span class="agent-model">Sonnet-4</span>
+          </td>
+          <td>52.1</td>
+          <td>48.3</td>
+          <td class="f1-cell"><strong>46.7</strong></td>
+        </tr>
+        <tr>
+          <td class="rank-cell">2</td>
+          <td class="agent-cell">
+            <span class="agent-name">Codex CLI</span>
+            <span class="agent-model">gpt-5-medium</span>
+          </td>
+          <td>44.83</td>
+          <td>48.96</td>
+          <td class="f1-cell">41.93</td>
+        </tr>
+        <tr>
+          <td class="rank-cell">3</td>
+          <td class="agent-cell">
+            <span class="agent-name">OpenHands</span>
+            <span class="agent-model">gpt-5</span>
+          </td>
+          <td>41.67</td>
+          <td>41.42</td>
+          <td class="f1-cell">37.87</td>
+        </tr>
+        <tr>
+          <td class="rank-cell">4</td>
+          <td class="agent-cell">
+            <span class="agent-name">OpenHands</span>
+            <span class="agent-model">o4-mini</span>
+          </td>
+          <td>36.81</td>
+          <td>36.63</td>
+          <td class="f1-cell">31.85</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="key-findings">
+      <div class="finding-card">
+        <div class="finding-icon">📉</div>
+        <div class="finding-content">
+          <strong>Low Performance</strong>
+          <p>Best agent achieves only 46.7 F₁</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">📈</div>
+        <div class="finding-content">
+          <strong>High Variance</strong>
+          <p>Success often appears to be a "lottery"</p>
+        </div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">🧠</div>
+        <div class="finding-content">
+          <strong>Planning Bottleneck</strong>
+          <p>73.6% of errors from flawed planning</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="leaderboard-note has-text-centered">More agents are being added...</p>
+  </div>
+</section>
+
+
+<!-- 5. TASK EXAMPLES SECTION -->
+<section class="section tasks-section" id="tasks">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Benchmark Tasks</h2>
+    <p class="section-subtitle has-text-centered">
+      30 research tasks from high-impact ML papers. Click to see details.
+    </p>
+
+    <div class="task-filters">
+      <button class="task-filter active" data-filter="all">All</button>
+      <button class="task-filter" data-filter="iclr">ICLR</button>
+      <button class="task-filter" data-filter="icml">ICML</button>
+      <button class="task-filter" data-filter="neurips">NeurIPS</button>
+    </div>
+
+    <div class="tasks-grid-interactive">
+      <!-- Original 9 papers for "All" tab -->
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">TACL 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Lost in the Middle</h4>
+          <p class="task-description">Do language models use information equally regardless of its position in context?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Context Position Effects</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>How does the position of relevant information within long contexts affect language model performance on retrieval tasks?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Multi-document QA with multiple documents, varying the position of the gold document.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Performance follows a U-shaped curve: models perform best when relevant information is at the beginning or end, with significant degradation for middle positions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">Nature 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">LLM Racial Bias in Medicine</h4>
+          <p class="task-description">Do clinical LLMs propagate race-based medical misconceptions?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Healthcare Bias</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLMs exhibit racial bias when generating medical reports and predictions for different demographic groups?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Generate medical predictions (hospitalization, costs, mortality) for patient cases while systematically varying racial/ethnic information.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Models show significant racial biases: higher costs projected for White populations, optimistic survival predictions, and disease-race associations mirroring real-world disparities.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">LLMs Lack Self-Correction</h4>
+          <p class="task-description">Can LLMs improve reasoning by self-correction without external feedback?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Reasoning Behavior</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can large language models improve their reasoning performance through intrinsic self-correction without any external feedback?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Test self-correction on GSM8K, CommonSenseQA, and HotpotQA using prompts that ask models to review and revise their answers.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLMs cannot reliably self-correct reasoning without external feedback. Performance often degrades as models change correct answers to incorrect ones.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">arXiv 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Awareness Detection</h4>
+          <p class="task-description">Can models detect whether an interaction comes from evaluation or deployment?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Evaluation Awareness</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can frontier LLMs distinguish between evaluation/benchmark prompts and real-world deployment interactions?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Binary classification task on diverse prompts from multiple datasets including MMLU, SWEBench, and real-world interactions.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Gemini-2.5-Pro achieves AUC of 0.83 in identifying evaluations, demonstrating significant evaluation awareness capability.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">arXiv 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">CoT Faithfulness Gaps</h4>
+          <p class="task-description">Do chain-of-thought explanations faithfully reflect model reasoning?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Reasoning Faithfulness</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>When reasoning models use hints to solve problems, do they faithfully acknowledge these hints in their chain-of-thought?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Insert various hints into prompts and measure how often models mention using the hints in their reasoning traces.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Models use hints but rarely mention them in their reasoning. Reveal rates are consistently low across different model families.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">NeurIPS 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">CoT Without Prompting</h4>
+          <p class="task-description">Can altered decoding reveal latent reasoning paths in LLMs?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Decoding Strategies</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can chain-of-thought reasoning paths be extracted from LLMs by modifying the decoding process rather than prompting?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Compare greedy decoding vs. top-k alternative token exploration on GSM8K and other reasoning benchmarks.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>CoT reasoning paths are inherent in alternative decoding sequences. CoT-decoding substantially outperforms standard greedy decoding.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Hallucination Snowballing</h4>
+          <p class="task-description">Do LLM hallucinations compound when models build on prior errors?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Error Propagation</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do language models generate hallucinations that they could recognize as incorrect if presented in isolation?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>QA datasets on primality testing, senator searches, and flight connectivity. Test if models can identify their own false claims separately.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Models over-commit to early mistakes. They can identify most of their own incorrect claims when presented separately, yet still generate them in context.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Counterfactual Simulatability</h4>
+          <p class="task-description">Can humans predict model behavior changes from explanations?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Explanation Quality</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLM explanations enable humans to accurately predict how the model would behave on variations of the input?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Multi-hop factual reasoning and reward modeling tasks. Measure if explanations help predict model outputs on counterfactual inputs.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLM explanations have low precision. Plausible-sounding explanations don't correlate with actual predictive value for model behavior.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="featured" data-featured="true">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Premise Order Effects</h4>
+          <p class="task-description">Does the order of logical premises affect LLM reasoning accuracy?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Logical Reasoning</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Are LLMs sensitive to the ordering of premises in deductive reasoning tasks, even though logical validity is order-independent?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Deductive reasoning with permuted premise orders. R-GSM benchmark for mathematical problem-solving with reordered conditions.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Performance drops significantly when premises are permuted. Models perform best when premises match the proof order.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICLR Papers (for ICLR tab) -->
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">LLMs Lack Self-Correction</h4>
+          <p class="task-description">Can LLMs improve reasoning by self-correction without external feedback?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Reasoning Behavior</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can large language models improve their reasoning performance through intrinsic self-correction without any external feedback?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Test self-correction on GSM8K, CommonSenseQA, and HotpotQA using prompts that ask models to review and revise their answers.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLMs cannot reliably self-correct reasoning without external feedback. Performance often degrades as models change correct answers to incorrect ones.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Bias Runs Deep</h4>
+          <p class="task-description">Do persona assignments surface implicit reasoning biases in LLMs?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Persona Bias</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLMs exhibit stereotypical reasoning biases when assigned different demographic personas?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Multiple reasoning datasets, various LLMs, and diverse personas across race, gender, religion, disability, and political affiliation.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Most personas showed bias across models. Some datasets had substantial performance drops with certain personas.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Not Robust MCQ Selectors</h4>
+          <p class="task-description">Are LLMs robust to option position changes in multiple choice questions?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Selection Bias</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLMs exhibit selection bias toward specific answer positions (A/B/C/D) regardless of content?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>MMLU and other MCQ benchmarks with permuted answer positions across multiple LLMs.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Moving correct answers to different positions significantly affects model accuracy, with some positions causing large performance drops and others yielding gains.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Prompt Format Sensitivity</h4>
+          <p class="task-description">How sensitive are LLMs to spurious features in prompt design?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Prompt Robustness</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>How much does LLM performance vary based on minor prompt formatting choices that shouldn't affect meaning?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>50+ tasks with various prompt format variations (spacing, delimiters, ordering) across multiple models.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Performance differences can be substantial across different prompt formats. Significant variation exists across tasks and models.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Space and Time Representations</h4>
+          <p class="task-description">Do language models learn coherent representations of space and time?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">World Models</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLMs learn linear representations of spatial and temporal information that generalize across entity types?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Probe LLM activations on spatial datasets (world/US/NYC places) and temporal datasets (historical figures, artworks, news).</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLMs learn linear space/time representations. Individual "space neurons" and "time neurons" reliably encode coordinates.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Uncertainty Expression</h4>
+          <p class="task-description">Can LLMs accurately express their uncertainty about answers?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Confidence Calibration</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can LLMs verbalize well-calibrated confidence scores that reflect their actual likelihood of being correct?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Various prompting strategies (CoT, self-probing) across multiple LLMs on calibration and failure prediction tasks.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLMs tend to be overconfident when verbalizing confidence. Calibration improves with model capability but remains far from ideal.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">ICL from Repetitions</h4>
+          <p class="task-description">How do surface repetitions influence in-context learning?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">In-Context Learning</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Does token co-occurrence reinforcement from repeated patterns in demonstrations drive in-context learning behavior?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Analyze ICL across OPT and LLaMA models with controlled demonstration patterns and token repetitions.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Surface-level repetitions significantly influence ICL. Token reinforcement can create both beneficial and spurious connections.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">To CoT or Not to CoT</h4>
+          <p class="task-description">When does chain-of-thought actually help LLM reasoning?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">CoT Analysis</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>On which task types does chain-of-thought prompting provide meaningful performance benefits?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Meta-analysis of many papers, evaluation on diverse datasets across multiple models comparing CoT vs. direct answering.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>CoT helps mainly on math and symbolic reasoning. On MMLU, CoT only helps when questions contain symbolic operations (equals signs).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="iclr">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICLR 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Rationality Assumptions</h4>
+          <p class="task-description">Do LLMs assume people are more rational than they really are?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Human Modeling</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLMs model human decision-making as more aligned with rational choice theory than actual human behavior?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Predict human choices between gambles using a large dataset of human risky decisions. Compare LLM predictions to actual behavior.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLMs align more with expected value theory than actual human choices. They assume people are more rational than they are.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICML Papers (for ICML tab) -->
+      <div class="task-card-expandable" data-venue="icml">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Hallucination Snowballing</h4>
+          <p class="task-description">Do LLM hallucinations compound when models build on prior errors?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Error Propagation</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do language models generate hallucinations that they could recognize as incorrect if presented in isolation?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>QA datasets on primality testing, senator searches, and flight connectivity. Test if models can identify their own false claims separately.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Models over-commit to early mistakes. They can identify most of their own incorrect claims when presented separately, yet still generate them in context.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="icml">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Counterfactual Simulatability</h4>
+          <p class="task-description">Can humans predict model behavior changes from explanations?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Explanation Quality</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLM explanations enable humans to accurately predict how the model would behave on variations of the input?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Multi-hop factual reasoning and reward modeling tasks. Measure if explanations help predict model outputs on counterfactual inputs.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLM explanations have low precision. Plausible-sounding explanations don't correlate with actual predictive value for model behavior.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="icml">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Premise Order Effects</h4>
+          <p class="task-description">Does the order of logical premises affect LLM reasoning accuracy?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Logical Reasoning</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Are LLMs sensitive to the ordering of premises in deductive reasoning tasks, even though logical validity is order-independent?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Deductive reasoning with permuted premise orders. R-GSM benchmark for mathematical problem-solving with reordered conditions.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Performance drops significantly when premises are permuted. Models perform best when premises match the proof order.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="icml">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">ICML 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Fractal Complexity</h4>
+          <p class="task-description">Do LLMs capture the fractal structure of natural language?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Language Structure</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can LLMs replicate the self-similar, fractal properties and long-range dependencies found in natural language?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Measure Hölder and Hurst exponents on LLM outputs vs. human text across different temperatures and prompting methods.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Natural language fractal parameters fall in a narrow range; LLM outputs vary widely. Larger models better capture fractal properties.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NeurIPS Papers (for NeurIPS tab) -->
+      <div class="task-card-expandable" data-venue="neurips">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">NeurIPS 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">CoT Without Prompting</h4>
+          <p class="task-description">Can altered decoding reveal latent reasoning paths in LLMs?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Decoding Strategies</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can chain-of-thought reasoning paths be extracted from LLMs by modifying the decoding process rather than prompting?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Compare greedy decoding vs. top-k alternative token exploration on GSM8K and other reasoning benchmarks.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>CoT reasoning paths are inherent in alternative decoding sequences. CoT-decoding substantially outperforms standard greedy decoding.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="neurips">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">NeurIPS 2024</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Chain of Thoughtlessness</h4>
+          <p class="task-description">Does CoT actually teach LLMs general algorithmic procedures?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Planning Analysis</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Does chain-of-thought prompting enable LLMs to learn generalizable algorithmic reasoning procedures?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Blocksworld planning problems with GPT-4 and Claude-3-Opus. Test generalization beyond example complexity.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>CoT improvements require problem-specific prompts and degrade rapidly as complexity increases beyond examples. It's pattern matching, not algorithmic learning.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="neurips">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">NeurIPS 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">SECA Adversarial Examples</h4>
+          <p class="task-description">Can semantic-preserving prompt changes cause LLMs to hallucinate?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Adversarial Robustness</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Can realistic, meaning-preserving prompt modifications reliably trigger hallucinations in LLMs?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Constrained optimization to find semantic-equivalent adversarial prompts that maintain coherence while eliciting hallucinations.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>SECA achieves high attack success rates with almost no semantic or coherence errors, exposing model sensitivity to realistic variations.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="neurips">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">NeurIPS 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">Distributive Fairness</h4>
+          <p class="task-description">How fair are LLMs in resource allocation decisions?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Fairness</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>Do LLM resource allocation decisions align with human fairness principles like equitability and envy-freeness?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Fair division tasks evaluating equitability, envy-freeness, and Rawlsian maximin principles across various allocation scenarios.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>LLMs show stark misalignment with human distributional preferences. They cannot effectively use money to mitigate inequality.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card-expandable" data-venue="neurips">
+        <div class="task-card-interactive">
+          <div class="task-card-header">
+            <span class="task-venue-tag">NeurIPS 2025</span>
+            <span class="expand-icon">+</span>
+          </div>
+          <h4 class="task-title">QuestBench</h4>
+          <p class="task-description">Can LLMs ask the right questions to acquire missing information?</p>
+          <div class="task-meta">
+            <span class="task-topic-tag">Information Seeking</span>
+          </div>
+        </div>
+        <div class="task-details">
+          <div class="detail-section">
+            <h5>Research Question</h5>
+            <p>When given underspecified problems, can LLMs identify and ask the right clarifying questions?</p>
+          </div>
+          <div class="detail-section">
+            <h5>Experiment Settings</h5>
+            <p>Logic-Q, Planning-Q, GSM-Q tasks with missing variables. Models must select correct clarification questions.</p>
+          </div>
+          <div class="detail-section">
+            <h5>Ground Truth</h5>
+            <p>Models excel at math-based tasks but struggle significantly on logic and planning tasks. Solving ability doesn't transfer to asking the right questions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tasks-more">
+      <span>+ 21 more tasks in the full benchmark</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- 6. ERROR ANALYSIS SECTION -->
+<section class="section analysis-section" id="analysis">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Error Analysis</h2>
+    <p class="section-subtitle has-text-centered">
+      Where do AI research agents fail? Our taxonomy reveals systematic failure patterns.
+    </p>
+
+    <div class="error-summary-grid">
+      <div class="error-phase-card planning">
+        <div class="phase-icon">📋</div>
+        <h4>Planning</h4>
+        <div class="phase-percentage">73.6%</div>
+        <ul class="phase-errors">
+          <li>Goal Deviation</li>
+          <li>Method Deviation</li>
+        </ul>
+      </div>
+
+      <div class="error-phase-card implementation">
+        <div class="phase-icon">💻</div>
+        <h4>Implementation</h4>
+        <div class="phase-percentage">3.0%</div>
+        <ul class="phase-errors">
+          <li>Unsound Code</li>
+          <li>Missing Steps</li>
+          <li>Wrong Dependencies</li>
+        </ul>
+      </div>
+
+      <div class="error-phase-card execution">
+        <div class="phase-icon">⚡</div>
+        <h4>Execution</h4>
+        <div class="phase-percentage">5.6%</div>
+        <ul class="phase-errors">
+          <li>Premature Termination</li>
+          <li>Endless Loop</li>
+          <li>Runtime Errors</li>
+        </ul>
+      </div>
+
+      <div class="error-phase-card analysis">
+        <div class="phase-icon">🔬</div>
+        <h4>Analysis</h4>
+        <div class="phase-percentage">17.8%</div>
+        <ul class="phase-errors">
+          <li>Misinterpretation</li>
+          <li>Overgeneralization</li>
+          <li>Unrelated Conclusions</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="analysis-insight">
+      <p><strong>Key Insight:</strong> The challenge is scientific reasoning, not implementation. As models become more capable, the bottleneck shifts from coding to high-level planning and analysis.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 7. BIBTEX SECTION -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title section-title has-text-centered">Citation</h2>
+    <p class="has-text-centered" style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+      Paper coming soon. Citation will be available upon publication.
+    </p>
+    <pre><code>@article{firebench2026,
+  title     = {FIRE-Bench: Evaluating Research Agents on the Rediscovery of Scientific Insights},
+  author    = {Wang, Zhen and Bai, Fan and Luo, Zhongyan and Su, Jinyan and Sun, Kaiser and Liu, Weiqi and Chen, Albert and Liu, Jieyuan and Zhou, Kun and Cardie, Claire and Dredze, Mark and Xing, Eric P. and Hu, Zhiting},
+  journal   = {arXiv preprint},
+  year      = {2026},
+  note      = {Coming Soon}
+}</code></pre>
+  </div>
+</section>
+
+
+<!-- INSTITUTION LOGOS -->
+<section class="section institution-section">
+  <div class="container is-max-desktop">
+    <div class="institution-logos">
+      <a href="https://ucsd.edu" target="_blank" class="institution-logo">
+        <img src="./static/images/institutions/ucsd.svg" alt="UC San Diego">
+      </a>
+      <a href="https://www.jhu.edu" target="_blank" class="institution-logo">
+        <img src="./static/images/institutions/jhu.svg" alt="Johns Hopkins University">
+      </a>
+      <a href="https://www.cornell.edu" target="_blank" class="institution-logo">
+        <img src="./static/images/institutions/cornell.svg" alt="Cornell University">
+      </a>
+      <a href="https://mbzuai.ac.ae" target="_blank" class="institution-logo">
+        <img src="./static/images/institutions/mbzuai.png" alt="MBZUAI">
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            Template from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Navbar scroll effect
+  const navbar = document.querySelector('.main-nav');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // Mobile burger menu toggle
+  const burger = document.querySelector('.navbar-burger');
+  const menu = document.querySelector('#mainNavbar');
+  if (burger && menu) {
+    burger.addEventListener('click', function() {
+      burger.classList.toggle('is-active');
+      menu.classList.toggle('is-active');
+    });
+  }
+
+  // Close mobile menu when clicking a link
+  const navLinks = document.querySelectorAll('.navbar-menu .navbar-item');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      burger.classList.remove('is-active');
+      menu.classList.remove('is-active');
+    });
+  });
+
+  // Task filter functionality
+  const filterButtons = document.querySelectorAll('.task-filter');
+  const taskCards = document.querySelectorAll('.task-card-expandable');
+  const tasksGrid = document.querySelector('.tasks-grid-interactive');
+  
+  // Create the full-width details panel
+  const detailsPanel = document.createElement('div');
+  detailsPanel.className = 'task-details-panel';
+  detailsPanel.innerHTML = `
+    <div class="task-details-panel-header">
+      <div class="task-details-panel-title">
+        <span class="panel-venue-tag"></span>
+        <h3></h3>
+      </div>
+      <button class="task-details-panel-close">&times;</button>
+    </div>
+    <div class="task-details-panel-content"></div>
+  `;
+  
+  // Insert panel after the grid
+  tasksGrid.parentNode.insertBefore(detailsPanel, tasksGrid.nextSibling);
+  
+  // Close button functionality
+  detailsPanel.querySelector('.task-details-panel-close').addEventListener('click', function() {
+    detailsPanel.classList.remove('active');
+    taskCards.forEach(card => card.classList.remove('expanded'));
+  });
+
+  // Initialize: show only featured papers (for "All" tab)
+  taskCards.forEach(card => {
+    if (card.getAttribute('data-featured') === 'true') {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Update active button
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+
+      const filter = this.getAttribute('data-filter');
+
+      // Close details panel and collapse all cards when switching tabs
+      detailsPanel.classList.remove('active');
+      taskCards.forEach(card => {
+        card.classList.remove('expanded');
+      });
+
+      taskCards.forEach(card => {
+        if (filter === 'all') {
+          // Show only featured papers for "All" tab
+          if (card.getAttribute('data-featured') === 'true') {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        } else if (card.getAttribute('data-venue') === filter) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Task card expand/collapse functionality
+  taskCards.forEach(card => {
+    const cardHeader = card.querySelector('.task-card-interactive');
+    cardHeader.addEventListener('click', function() {
+      const isExpanded = card.classList.contains('expanded');
+      
+      // Close other expanded cards
+      taskCards.forEach(otherCard => {
+        otherCard.classList.remove('expanded');
+      });
+      
+      if (isExpanded) {
+        // Close the panel
+        detailsPanel.classList.remove('active');
+      } else {
+        // Expand this card and show panel
+        card.classList.add('expanded');
+        
+        // Get card data
+        const venue = card.querySelector('.task-venue-tag').textContent;
+        const title = card.querySelector('.task-title').textContent;
+        const details = card.querySelector('.task-details');
+        
+        // Update panel content
+        detailsPanel.querySelector('.panel-venue-tag').textContent = venue;
+        detailsPanel.querySelector('h3').textContent = title;
+        detailsPanel.querySelector('.task-details-panel-content').innerHTML = details.innerHTML;
+        
+        // Show panel
+        detailsPanel.classList.add('active');
+        
+        // Scroll panel into view
+        setTimeout(() => {
+          detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>
