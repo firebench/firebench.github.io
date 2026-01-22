@@ -1237,13 +1237,14 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="task-details-panel-content"></div>
   `;
   
-  // Insert panel after the grid
-  tasksGrid.parentNode.insertBefore(detailsPanel, tasksGrid.nextSibling);
-  
   // Close button functionality
   detailsPanel.querySelector('.task-details-panel-close').addEventListener('click', function() {
     detailsPanel.classList.remove('active');
     taskCards.forEach(card => card.classList.remove('expanded'));
+    // Remove panel from grid
+    if (detailsPanel.parentNode) {
+      detailsPanel.parentNode.removeChild(detailsPanel);
+    }
   });
 
   // Initialize: show only featured papers (for "All" tab)
@@ -1265,6 +1266,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Close details panel and collapse all cards when switching tabs
       detailsPanel.classList.remove('active');
+      if (detailsPanel.parentNode) {
+        detailsPanel.parentNode.removeChild(detailsPanel);
+      }
       taskCards.forEach(card => {
         card.classList.remove('expanded');
       });
@@ -1286,6 +1290,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Helper function to get number of grid columns
+  function getGridColumns() {
+    const width = window.innerWidth;
+    if (width <= 600) return 1;
+    if (width <= 900) return 2;
+    return 3;
+  }
+
+  // Helper function to find the last card in the same row
+  function getLastCardInRow(clickedCard) {
+    // Get all currently visible cards (excluding the panel itself)
+    const visibleCards = Array.from(taskCards).filter(card => 
+      card.style.display !== 'none' && card !== detailsPanel
+    );
+    
+    const columns = getGridColumns();
+    const clickedIndex = visibleCards.indexOf(clickedCard);
+    
+    if (clickedIndex === -1) return clickedCard;
+    
+    // Calculate which row the clicked card is in
+    const rowNumber = Math.floor(clickedIndex / columns);
+    
+    // Find the last card in that row
+    const lastIndexInRow = Math.min((rowNumber + 1) * columns - 1, visibleCards.length - 1);
+    
+    return visibleCards[lastIndexInRow];
+  }
+
   // Task card expand/collapse functionality
   taskCards.forEach(card => {
     const cardHeader = card.querySelector('.task-card-interactive');
@@ -1298,8 +1331,11 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       
       if (isExpanded) {
-        // Close the panel
+        // Close the panel and remove from grid
         detailsPanel.classList.remove('active');
+        if (detailsPanel.parentNode) {
+          detailsPanel.parentNode.removeChild(detailsPanel);
+        }
       } else {
         // Expand this card and show panel
         card.classList.add('expanded');
@@ -1313,6 +1349,15 @@ document.addEventListener('DOMContentLoaded', function() {
         detailsPanel.querySelector('.panel-venue-tag').textContent = venue;
         detailsPanel.querySelector('h3').textContent = title;
         detailsPanel.querySelector('.task-details-panel-content').innerHTML = details.innerHTML;
+        
+        // Remove panel first if it exists (to recalculate row positions correctly)
+        if (detailsPanel.parentNode) {
+          detailsPanel.parentNode.removeChild(detailsPanel);
+        }
+        
+        // Find the last card in the same row and insert panel after it
+        const lastCardInRow = getLastCardInRow(card);
+        lastCardInRow.parentNode.insertBefore(detailsPanel, lastCardInRow.nextSibling);
         
         // Show panel
         detailsPanel.classList.add('active');
