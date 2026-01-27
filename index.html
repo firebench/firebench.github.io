@@ -26,6 +26,580 @@
   <script src="./static/js/index.js"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- Research Tree Visualization Styles -->
+  <style>
+    .research-tree-section {
+      background: #FFFFFF;
+      padding: 4rem 1.5rem;
+    }
+
+    .research-tree-section .section-title,
+    .research-tree-section .section-subtitle {
+      color: #1a1a1a;
+    }
+
+    .research-tree-section .section-subtitle {
+      color: #666666;
+      margin-bottom: 2rem;
+    }
+
+    .tree-paper-selector {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .tree-paper-tab {
+      padding: 12px 20px;
+      background: #f5f5f5;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      max-width: 350px;
+    }
+
+    .tree-paper-tab:hover {
+      background: #eeeeee;
+      border-color: #bdbdbd;
+    }
+
+    .tree-paper-tab.active {
+      background: rgba(100, 181, 246, 0.15);
+      border-color: #2196f3;
+    }
+
+    .tree-tab-title {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .tree-tab-venue {
+      font-size: 0.75em;
+      color: #666666;
+    }
+
+    /* Main Layout with Sidebar */
+    .tree-main-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .tree-sidebar {
+      flex-shrink: 0;
+      width: 160px;
+      position: sticky;
+      top: 100px;
+    }
+
+    .tree-content-area {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tree-controls-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tree-controls-vertical button {
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      color: #1a1a1a;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 0.85em;
+      text-align: left;
+    }
+
+    .tree-controls-vertical button:hover {
+      background: #eeeeee;
+      border-color: #bdbdbd;
+    }
+
+    .tree-legend-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+    }
+
+    .tree-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85em;
+      color: #333333;
+    }
+
+    .tree-legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .tree-legend-root { background: linear-gradient(135deg, #6a1b9a 0%, #8e24aa 100%); }
+    .tree-legend-d1 { background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); }
+    .tree-legend-d2 { background: linear-gradient(135deg, #00695c 0%, #00897b 100%); }
+    .tree-legend-d3 { background: linear-gradient(135deg, #bf360c 0%, #e64a19 100%); }
+    .tree-legend-leaf { background: linear-gradient(135deg, #37474f 0%, #455a64 100%); }
+
+    .tree-paper-content {
+      display: none;
+    }
+
+    .tree-paper-content.active {
+      display: block;
+    }
+
+    .tree-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 15px;
+    }
+
+    .tree-header h3 {
+      font-size: 1.4em;
+      color: #1976d2;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .tree-header .tree-authors {
+      font-size: 0.9em;
+      color: #666666;
+      margin-bottom: 5px;
+    }
+
+    .tree-header .tree-venue {
+      font-size: 0.85em;
+      color: #888888;
+    }
+
+    .tree-stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #fafafa;
+      border-radius: 8px;
+    }
+
+    .tree-stat-item {
+      text-align: center;
+    }
+
+    .tree-stat-value {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #1976d2;
+    }
+
+    .tree-stat-label {
+      font-size: 0.75em;
+      color: #888888;
+      text-transform: uppercase;
+    }
+
+    .tree-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tree-node {
+      margin: 10px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .tree-node-header {
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: background 0.3s ease;
+    }
+
+    .tree-node-header:hover {
+      filter: brightness(0.95);
+    }
+
+    .tree-toggle-icon {
+      font-size: 1.2em;
+      min-width: 20px;
+      transition: transform 0.3s ease;
+      color: #fff;
+    }
+
+    .tree-node.collapsed .tree-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .tree-node-type {
+      font-size: 0.7em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .tree-node-title {
+      flex: 1;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #fff;
+    }
+
+    .tree-node-content {
+      padding: 0 20px 15px 52px;
+      display: none;
+    }
+
+    .tree-node:not(.collapsed) > .tree-node-content {
+      display: block;
+    }
+
+    .tree-node-description {
+      font-size: 0.9em;
+      color: #555555;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .tree-node-evidence {
+      font-size: 0.8em;
+      color: #2e7d32;
+      background: rgba(46, 125, 50, 0.1);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tree-children {
+      margin-left: 25px;
+      border-left: 2px solid #e0e0e0;
+      padding-left: 15px;
+    }
+
+    /* Root Node */
+    .tree-root-node > .tree-node-header {
+      background: linear-gradient(135deg, #6a1b9a 0%, #8e24aa 100%);
+    }
+    .tree-root-node .tree-node-type {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    /* Depth-1 Nodes */
+    .tree-depth-1-node > .tree-node-header {
+      background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+    }
+    .tree-depth-1-node .tree-node-type {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    /* Depth-2 Nodes */
+    .tree-depth-2-node > .tree-node-header {
+      background: linear-gradient(135deg, #00695c 0%, #00897b 100%);
+    }
+    .tree-depth-2-node .tree-node-type {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    /* Depth-3 Nodes */
+    .tree-depth-3-node > .tree-node-header {
+      background: linear-gradient(135deg, #bf360c 0%, #e64a19 100%);
+    }
+    .tree-depth-3-node .tree-node-type {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    /* Leaf Nodes */
+    .tree-leaf-node > .tree-node-header {
+      background: linear-gradient(135deg, #37474f 0%, #455a64 100%);
+    }
+    .tree-leaf-node .tree-node-type {
+      background: #ffc107;
+      color: #212121;
+    }
+
+    .tree-leaf-details {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .tree-detail-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 10px;
+      font-size: 0.85em;
+    }
+
+    .tree-detail-label {
+      color: #90a4ae;
+      font-weight: 600;
+    }
+
+    .tree-detail-value {
+      color: #cfd8dc;
+    }
+
+    .tree-tag {
+      display: inline-block;
+      background: rgba(100, 181, 246, 0.2);
+      color: #64b5f6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      margin: 2px;
+    }
+
+    .tree-conclusion-box {
+      background: rgba(129, 199, 132, 0.15);
+      border-left: 3px solid #81c784;
+      padding: 12px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 10px;
+    }
+
+    .tree-conclusion-box .tree-label {
+      color: #81c784;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 0.8em;
+      text-transform: uppercase;
+    }
+
+    .tree-conclusion-box .tree-text {
+      color: #c8e6c9;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    .tree-evidence-refs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .tree-evidence-ref {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      color: #b0bec5;
+    }
+
+    /* View Toggle Styles */
+    .tree-view-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tree-view-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #f5f5f5;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 0.95em;
+      font-weight: 500;
+    }
+
+    .tree-view-btn:hover {
+      background: #eeeeee;
+      border-color: #bdbdbd;
+    }
+
+    .tree-view-btn.active {
+      background: rgba(33, 150, 243, 0.15);
+      border-color: #2196f3;
+      color: #1976d2;
+    }
+
+    .view-icon {
+      font-size: 1.1em;
+    }
+
+    .tree-view-container {
+      display: none;
+    }
+
+    .tree-view-container.active {
+      display: block;
+    }
+
+    /* Visual Diagram Styles */
+    .tree-diagram-content {
+      display: none;
+    }
+
+    .tree-diagram-content.active {
+      display: block;
+    }
+
+    .tree-diagram-wrapper {
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+      border-radius: 16px;
+      padding: 30px 20px;
+      max-width: 1150px;
+      margin: 0 auto;
+      overflow-x: auto;
+    }
+
+    .tree-svg-diagram {
+      width: 100%;
+      min-width: 900px;
+      height: auto;
+      display: block;
+    }
+
+    .tree-diagram-placeholder {
+      background: #f9f9f9;
+      border: 2px dashed #e0e0e0;
+      border-radius: 16px;
+      padding: 60px 40px;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tree-diagram-placeholder .placeholder-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      opacity: 0.7;
+    }
+
+    .tree-diagram-placeholder h4 {
+      color: #1a1a1a;
+      font-size: 1.4em;
+      margin-bottom: 15px;
+    }
+
+    .tree-diagram-placeholder p {
+      color: #666666;
+      font-size: 1em;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .tree-main-layout {
+        flex-direction: column;
+      }
+
+      .tree-sidebar {
+        width: 100%;
+        position: static;
+        flex-direction: row;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .tree-sidebar[style*="display: block"] {
+        display: flex !important;
+      }
+
+      .tree-controls-vertical {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 0;
+      }
+
+      .tree-controls-vertical button {
+        text-align: center;
+      }
+
+      .tree-legend-vertical {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .tree-paper-selector {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .tree-paper-tab {
+        width: 100%;
+        max-width: 100%;
+      }
+      
+      .tree-controls-vertical button {
+        padding: 8px 12px;
+        font-size: 0.8em;
+      }
+      
+      .tree-detail-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .tree-stats-bar {
+        gap: 15px;
+      }
+
+      .tree-view-toggle {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .tree-view-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+
+      .tree-diagram-wrapper {
+        padding: 15px 10px;
+      }
+
+      .tree-diagram-placeholder {
+        padding: 40px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -48,6 +622,7 @@
         <a class="navbar-item" href="#method">Method</a>
         <a class="navbar-item" href="#leaderboard">Leaderboard</a>
         <a class="navbar-item" href="#tasks">Tasks</a>
+        <a class="navbar-item" href="#research-tree">Research Tree</a>
         <a class="navbar-item" href="#analysis">Analysis</a>
         <a class="navbar-item" href="#BibTeX">Cite</a>
       </div>
@@ -69,11 +644,11 @@
           </p>
           <div class="is-size-6 publication-authors">
             <span class="author-block">
-              Zhen Wang*<sup>1</sup>, Fan Bai*<sup>2</sup>, Zhongyan Luo*<sup>1</sup>, Jinyan Su<sup>3</sup>, Kaiser Sun<sup>2</sup>, Xinle Yu<sup>1</sup>, Jieyuan Liu<sup>1</sup>, Kun Zhou<sup>1</sup>, Claire Cardie<sup>3</sup>, Mark Dredze<sup>2</sup>, Eric P. Xing<sup>4</sup>, Zhiting Hu<sup>1</sup>
+              Zhen Wang*<sup>1</sup>, Fan Bai*<sup>2</sup>, Zhongyan Luo*<sup>1</sup>, Jinyan Su<sup>3</sup>, Kaiser Sun<sup>2</sup>, Xinle Yu<sup>1</sup>, Jieyuan Liu<sup>1</sup>, Kun Zhou<sup>1</sup>, Claire Cardie<sup>3</sup>, Mark Dredze<sup>2</sup>, Eric P. Xing<sup>4,5</sup>, Zhiting Hu<sup>1</sup>
             </span>
           </div>
           <div class="is-size-7 publication-affiliations">
-            <span class="affiliation-block"><sup>1</sup>UC San Diego, <sup>2</sup>Johns Hopkins University, <sup>3</sup>Cornell University, <sup>4</sup>MBZUAI</span>
+            <span class="affiliation-block"><sup>1</sup>UC San Diego, <sup>2</sup>Johns Hopkins University, <sup>3</sup>Cornell University, <sup>4</sup>MBZUAI, <sup>5</sup>CMU</span>
             <br>
             <span class="affiliation-note">* Equal Contribution</span>
           </div>
@@ -208,6 +783,9 @@
     </div>
   </div>
 </section>
+
+
+
 
 
 <!-- 4. LEADERBOARD SECTION -->
@@ -1085,6 +1663,532 @@
 </section>
 
 
+<!-- RESEARCH TREE VISUALIZATION SECTION -->
+<section class="section research-tree-section" id="research-tree">
+  <div class="container is-max-widescreen">
+    <h2 class="title is-3 section-title has-text-centered">Research Problem Tree</h2>
+    <p class="section-subtitle has-text-centered">
+      Interactive visualization of paper problem trees — click nodes to expand and explore the research structure
+    </p>
+
+    <div class="tree-paper-selector">
+      <div class="tree-paper-tab active" onclick="switchTreePaper(0)">
+        <div class="tree-tab-title">Lost in the Middle</div>
+        <div class="tree-tab-venue">arXiv 2023</div>
+      </div>
+      <div class="tree-paper-tab" onclick="switchTreePaper(1)">
+        <div class="tree-tab-title">LLMs Cannot Self-Correct Reasoning</div>
+        <div class="tree-tab-venue">ICLR 2024</div>
+      </div>
+      <div class="tree-paper-tab" onclick="switchTreePaper(2)">
+        <div class="tree-tab-title">Racial Bias in Medical Reports</div>
+        <div class="tree-tab-venue">Comm. Medicine 2024</div>
+      </div>
+    </div>
+
+    <div class="tree-view-toggle">
+      <button class="tree-view-btn active" onclick="switchTreeView('interactive')">
+        <span class="view-icon">📋</span> Interactive Tree
+      </button>
+      <button class="tree-view-btn" onclick="switchTreeView('diagram')">
+        <span class="view-icon">🌳</span> Visual Diagram
+      </button>
+    </div>
+
+    <div class="tree-main-layout">
+      <!-- Left Sidebar -->
+      <div class="tree-sidebar" id="tree-sidebar">
+        <div class="tree-controls-vertical" id="tree-interactive-controls">
+          <button onclick="expandAllTree()">Expand All</button>
+          <button onclick="collapseAllTree()">Collapse All</button>
+          <button onclick="expandTreeToDepth(1)">Show Depth 1</button>
+          <button onclick="expandTreeToDepth(2)">Show Depth 2</button>
+        </div>
+
+        <div class="tree-legend-vertical">
+          <div class="tree-legend-item"><div class="tree-legend-color tree-legend-root"></div><span>Root</span></div>
+          <div class="tree-legend-item"><div class="tree-legend-color tree-legend-d1"></div><span>Depth 1</span></div>
+          <div class="tree-legend-item"><div class="tree-legend-color tree-legend-d2"></div><span>Depth 2</span></div>
+          <div class="tree-legend-item"><div class="tree-legend-color tree-legend-d3"></div><span>Depth 3</span></div>
+          <div class="tree-legend-item"><div class="tree-legend-color tree-legend-leaf"></div><span>Leaf (Experiment)</span></div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="tree-content-area">
+        <!-- Interactive Tree View -->
+        <div id="tree-interactive-view" class="tree-view-container active">
+          <div id="tree-paper-0" class="tree-paper-content active"></div>
+          <div id="tree-paper-1" class="tree-paper-content"></div>
+          <div id="tree-paper-2" class="tree-paper-content"></div>
+        </div>
+
+        <!-- Visual Diagram View -->
+        <div id="tree-diagram-view" class="tree-view-container">
+          <div id="tree-diagram-0" class="tree-diagram-content active">
+            <!-- Lost in the Middle SVG Diagram -->
+            <div class="tree-diagram-wrapper">
+              <svg viewBox="0 0 1100 750" class="tree-svg-diagram">
+                <defs>
+                  <linearGradient id="rootGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#8b5cf6"/>
+                    <stop offset="100%" style="stop-color:#a78bfa"/>
+                  </linearGradient>
+                  <linearGradient id="branch1Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6"/>
+                    <stop offset="100%" style="stop-color:#60a5fa"/>
+                  </linearGradient>
+                  <linearGradient id="branch2Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#10b981"/>
+                    <stop offset="100%" style="stop-color:#34d399"/>
+                  </linearGradient>
+                  <linearGradient id="branch3Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f59e0b"/>
+                    <stop offset="100%" style="stop-color:#fbbf24"/>
+                  </linearGradient>
+                  <linearGradient id="branch4Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ec4899"/>
+                    <stop offset="100%" style="stop-color:#f472b6"/>
+                  </linearGradient>
+                </defs>
+                <!-- Branch Lines from Root to Depth-1 -->
+                <path d="M 550 90 C 550 130, 140 130, 140 170" stroke="#3b82f6" stroke-width="3" fill="none"/>
+                <path d="M 550 90 C 550 130, 400 130, 400 170" stroke="#10b981" stroke-width="3" fill="none"/>
+                <path d="M 550 90 C 550 130, 700 130, 700 170" stroke="#f59e0b" stroke-width="3" fill="none"/>
+                <path d="M 550 90 C 550 130, 960 130, 960 170" stroke="#ec4899" stroke-width="3" fill="none"/>
+                <!-- Branch 1 Lines to Leaves -->
+                <path d="M 140 230 C 140 270, 75 270, 75 310" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M 140 230 C 140 270, 140 270, 140 310" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M 140 230 C 140 270, 205 270, 205 310" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <!-- Branch 2 Line to Leaf -->
+                <path d="M 400 230 C 400 270, 400 270, 400 310" stroke="#10b981" stroke-width="2" fill="none"/>
+                <!-- Branch 3 Lines to Leaves -->
+                <path d="M 700 230 C 700 270, 615 270, 615 310" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                <path d="M 700 230 C 700 270, 750 270, 750 310" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                <path d="M 700 230 C 700 270, 885 270, 885 310" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                <!-- Branch 4 Line to Leaf -->
+                <path d="M 960 230 C 960 270, 1020 270, 1020 310" stroke="#ec4899" stroke-width="2" fill="none"/>
+                <!-- Root Node -->
+                <g transform="translate(150, 10)">
+                  <rect width="800" height="80" fill="url(#rootGradient)" rx="14"/>
+                  <text fill="#ffffff" font-size="16" font-weight="600" x="400" y="26" text-anchor="middle">Research Question</text>
+                  <text x="400" y="46" text-anchor="middle" fill="#f5f3ff" font-size="12">Do LLMs robustly use information anywhere in long contexts,</text>
+                  <text x="400" y="64" text-anchor="middle" fill="#f5f3ff" font-size="12">or does performance depend on where relevant content appears?</text>
+                </g>
+                <!-- Branch 1: Multi-Document QA -->
+                <g transform="translate(15, 170)">
+                  <rect width="250" height="60" fill="url(#branch1Gradient)" rx="10"/>
+                  <text x="125" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Multi-document QA evaluation</text>
+                  <text x="125" y="42" text-anchor="middle" font-size="10" fill="#eff6ff">controlled position &amp; context length</text>
+                </g>
+                <!-- Branch 2: Key-Value Retrieval -->
+                <g transform="translate(280, 170)">
+                  <rect width="240" height="60" fill="url(#branch2Gradient)" rx="10"/>
+                  <text x="120" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Synthetic key-value retrieval</text>
+                  <text x="120" y="42" text-anchor="middle" font-size="10" fill="#ecfdf5">minimal retrieval ability test</text>
+                </g>
+                <!-- Branch 3: Factor Analyses -->
+                <g transform="translate(535, 170)">
+                  <rect width="330" height="60" fill="url(#branch3Gradient)" rx="10"/>
+                  <text x="165" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Why the position sensitivity? Factor analyses</text>
+                  <text x="165" y="42" text-anchor="middle" font-size="10" fill="#fef3c7">Architecture, query placement, instruction tuning</text>
+                </g>
+                <!-- Branch 4: Practical Implication -->
+                <g transform="translate(880, 170)">
+                  <rect width="160" height="60" fill="url(#branch4Gradient)" rx="10"/>
+                  <text x="80" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Practical implication</text>
+                  <text x="80" y="42" text-anchor="middle" font-size="10" fill="#fce7f3">Open-domain QA</text>
+                </g>
+                <!-- Branch 1 Leaves -->
+                <g transform="translate(10, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">Position effects</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">10/20/30 documents</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">6 LLMs tested</text>
+                  <text fill="#2563eb" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ U-shaped curve</text>
+                </g>
+                <g transform="translate(145, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">Baselines</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">Closed-book &amp; Oracle</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">56% vs 88%</text>
+                  <text fill="#2563eb" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ Set ceiling</text>
+                </g>
+                <!-- Branch 2 Leaf -->
+                <g transform="translate(335, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#10b981" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">UUID key-value</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">k = 75, 140, 300</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">Claude perfect</text>
+                  <text fill="#059669" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ Same U-shape</text>
+                </g>
+                <!-- Branch 3 Leaves -->
+                <g transform="translate(550, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">Architecture</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">Enc-Dec vs Dec</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">Flan-UL2/T5</text>
+                  <text fill="#d97706" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ Train len key</text>
+                </g>
+                <g transform="translate(685, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">Query-aware</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">Query before+after</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">Helps KV, not QA</text>
+                  <text fill="#d97706" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ Partial fix</text>
+                </g>
+                <g transform="translate(820, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">Instruction tuning</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">MPT, Llama-2</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">SFT+RLHF</text>
+                  <text fill="#d97706" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ Doesn't fix</text>
+                </g>
+                <!-- Branch 4 Leaf -->
+                <g transform="translate(955, 310)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#ec4899" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="65" y="18" text-anchor="middle" font-weight="600">Reader accuracy</text>
+                  <text fill="#64748b" font-size="9" x="65" y="34" text-anchor="middle">vs # docs (5-50)</text>
+                  <text fill="#64748b" font-size="9" x="65" y="48" text-anchor="middle">Contriever retr.</text>
+                  <text fill="#db2777" font-size="10" font-weight="600" x="65" y="68" text-anchor="middle">→ Saturates early</text>
+                </g>
+                <!-- Findings Summary Boxes -->
+                <g transform="translate(15, 415)">
+                  <rect width="260" height="70" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6" stroke-width="2" rx="10"/>
+                  <text fill="#1d4ed8" font-size="12" font-weight="600" x="130" y="22" text-anchor="middle">Finding: U-Shaped Accuracy</text>
+                  <text fill="#1e40af" font-size="10" x="130" y="40" text-anchor="middle">Best at beginning/end of context</text>
+                  <text fill="#1e40af" font-size="10" x="130" y="56" text-anchor="middle">Worst when info is in the middle</text>
+                </g>
+                <g transform="translate(285, 415)">
+                  <rect width="260" height="70" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="2" rx="10"/>
+                  <text fill="#047857" font-size="12" font-weight="600" x="130" y="22" text-anchor="middle">Finding: Not Just NL Semantics</text>
+                  <text fill="#065f46" font-size="10" x="130" y="40" text-anchor="middle">Even exact-match retrieval fails</text>
+                  <text fill="#065f46" font-size="10" x="130" y="56" text-anchor="middle">mid-context (except Claude)</text>
+                </g>
+                <g transform="translate(555, 415)">
+                  <rect width="260" height="70" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b" stroke-width="2" rx="10"/>
+                  <text fill="#b45309" font-size="12" font-weight="600" x="130" y="22" text-anchor="middle">Finding: Hard to Fix</text>
+                  <text fill="#92400e" font-size="10" x="130" y="40" text-anchor="middle">Architecture, tuning, query placement</text>
+                  <text fill="#92400e" font-size="10" x="130" y="56" text-anchor="middle">don't fully solve the problem</text>
+                </g>
+                <g transform="translate(825, 415)">
+                  <rect width="260" height="70" fill="rgba(236, 72, 153, 0.1)" stroke="#ec4899" stroke-width="2" rx="10"/>
+                  <text fill="#be185d" font-size="12" font-weight="600" x="130" y="22" text-anchor="middle">Finding: Diminishing Returns</text>
+                  <text fill="#9d174d" font-size="10" x="130" y="40" text-anchor="middle">More docs ≠ better reader accuracy</text>
+                  <text fill="#9d174d" font-size="10" x="130" y="56" text-anchor="middle">Consider reranking instead</text>
+                </g>
+                <!-- Main Takeaway -->
+                <g transform="translate(210, 510)">
+                  <rect width="680" height="60" fill="rgba(139, 92, 246, 0.12)" stroke="#8b5cf6" stroke-width="2" rx="12"/>
+                  <text fill="#7c3aed" font-size="15" font-weight="700" x="340" y="24" text-anchor="middle">Key Insight: The "Lost in the Middle" Effect</text>
+                  <text fill="#6d28d9" font-size="12" x="340" y="44" text-anchor="middle">LLMs struggle to use information in the middle of long contexts;</text>
+                  <text fill="#6d28d9" font-size="12" x="340" y="58" text-anchor="middle">this persists across architectures, tuning methods, and tasks</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div id="tree-diagram-1" class="tree-diagram-content">
+            <!-- LLMs Cannot Self-Correct SVG Diagram -->
+            <div class="tree-diagram-wrapper">
+              <svg viewBox="0 0 1200 720" class="tree-svg-diagram">
+                <defs>
+                  <linearGradient id="rootGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#8b5cf6"/>
+                    <stop offset="100%" style="stop-color:#a78bfa"/>
+                  </linearGradient>
+                  <linearGradient id="branch1Gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6"/>
+                    <stop offset="100%" style="stop-color:#60a5fa"/>
+                  </linearGradient>
+                  <linearGradient id="branch2Gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#10b981"/>
+                    <stop offset="100%" style="stop-color:#34d399"/>
+                  </linearGradient>
+                  <linearGradient id="branch3Gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f59e0b"/>
+                    <stop offset="100%" style="stop-color:#fbbf24"/>
+                  </linearGradient>
+                </defs>
+                <!-- Branch Lines from Root to Depth-1 -->
+                <path d="M 600 100 C 600 150, 200 150, 200 190" stroke="#3b82f6" stroke-width="3" fill="none"/>
+                <path d="M 600 100 C 600 150, 600 150, 600 190" stroke="#10b981" stroke-width="3" fill="none"/>
+                <path d="M 600 100 C 600 150, 945 150, 945 190" stroke="#f59e0b" stroke-width="3" fill="none"/>
+                <!-- Branch 1 Lines to Leaves -->
+                <path d="M 200 260 C 200 300, 80 300, 80 340" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M 200 260 C 200 300, 210 300, 210 340" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M 200 260 C 200 300, 340 300, 340 340" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <!-- Branch 2 Line to Leaf -->
+                <path d="M 600 260 C 600 300, 600 300, 600 340" stroke="#10b981" stroke-width="2" fill="none"/>
+                <!-- Branch 3 Line to Leaf -->
+                <path d="M 1000 260 C 1000 300, 1000 300, 1000 340" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                <!-- Root Node -->
+                <g transform="translate(250, 20)">
+                  <rect width="700" height="80" fill="url(#rootGradient2)" rx="14"/>
+                  <text fill="#ffffff" font-size="17" font-weight="600" x="350" y="28" text-anchor="middle">Research Question</text>
+                  <text x="350" y="48" text-anchor="middle" fill="#f5f3ff" font-size="12">Can LLMs intrinsically self-correct their own reasoning</text>
+                  <text x="350" y="66" text-anchor="middle" fill="#f5f3ff" font-size="12">without any external feedback? If not, why?</text>
+                </g>
+                <!-- Branch 1: Intrinsic Self-Correction -->
+                <g transform="translate(20, 190)">
+                  <rect width="360" height="70" fill="url(#branch1Gradient2)" rx="12"/>
+                  <text x="180" y="28" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">Establish and evaluate intrinsic</text>
+                  <text x="180" y="46" text-anchor="middle" font-size="12" fill="#eff6ff" font-weight="600">self-correction for reasoning tasks</text>
+                </g>
+                <!-- Branch 2: Compare Alternatives -->
+                <g transform="translate(475, 190)">
+                  <rect width="250" height="70" fill="url(#branch2Gradient2)" rx="12"/>
+                  <text x="125" y="28" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">Compare to alternatives</text>
+                  <text x="125" y="46" text-anchor="middle" font-size="12" fill="#ecfdf5" font-weight="600">at matched inference cost</text>
+                </g>
+                <!-- Branch 3: Prompt Confounds -->
+                <g transform="translate(820, 190)">
+                  <rect width="250" height="70" fill="url(#branch3Gradient2)" rx="12"/>
+                  <text x="125" y="28" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="600">Disentangle prompt-design</text>
+                  <text x="125" y="46" text-anchor="middle" font-size="12" fill="#fef3c7" font-weight="600">confounds in evaluations</text>
+                </g>
+                <!-- Branch 1 Leaves -->
+                <g transform="translate(10, 340)">
+                  <rect width="140" height="95" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="70" y="22" text-anchor="middle" font-weight="600">Oracle-gated</text>
+                  <text fill="#1e293b" font-size="10" x="70" y="38" text-anchor="middle">Self-Correction</text>
+                  <text fill="#64748b" font-size="9" x="70" y="56" text-anchor="middle">GSM8K: 75.9→84.3</text>
+                  <text fill="#2563eb" font-size="10" font-weight="600" x="70" y="78" text-anchor="middle">→ Needs labels</text>
+                </g>
+                <g transform="translate(160, 340)">
+                  <rect width="140" height="95" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="70" y="22" text-anchor="middle" font-weight="600">Intrinsic on</text>
+                  <text fill="#1e293b" font-size="10" x="70" y="38" text-anchor="middle">GPT-3.5/4/Llama</text>
+                  <text fill="#64748b" font-size="9" x="70" y="56" text-anchor="middle">GSM8K: 75.9→74.7</text>
+                  <text fill="#dc2626" font-size="10" font-weight="600" x="70" y="78" text-anchor="middle">→ Performance drops</text>
+                </g>
+                <g transform="translate(310, 340)">
+                  <rect width="140" height="95" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="10" x="70" y="22" text-anchor="middle" font-weight="600">Behavioral</text>
+                  <text fill="#1e293b" font-size="10" x="70" y="38" text-anchor="middle">Analysis</text>
+                  <text fill="#64748b" font-size="9" x="70" y="56" text-anchor="middle">Answer changes</text>
+                  <text fill="#2563eb" font-size="10" font-weight="600" x="70" y="78" text-anchor="middle">→ Correct→Wrong</text>
+                </g>
+                <!-- Branch 2 Leaf -->
+                <g transform="translate(500, 340)">
+                  <rect width="200" height="95" fill="#ffffff" stroke="#10b981" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="11" x="100" y="22" text-anchor="middle" font-weight="600">Multi-Agent Debate</text>
+                  <text fill="#1e293b" font-size="11" x="100" y="38" text-anchor="middle">vs Self-Consistency</text>
+                  <text fill="#64748b" font-size="10" x="100" y="56" text-anchor="middle">GSM8K, 3/6/9 responses</text>
+                  <text fill="#059669" font-size="11" font-weight="600" x="100" y="78" text-anchor="middle">→ SC wins at same cost</text>
+                </g>
+                <!-- Branch 3 Leaf -->
+                <g transform="translate(845, 340)">
+                  <rect width="200" height="95" fill="#ffffff" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="11" x="100" y="22" text-anchor="middle" font-weight="600">CommonGen-Hard</text>
+                  <text fill="#1e293b" font-size="11" x="100" y="38" text-anchor="middle">Improved Prompt</text>
+                  <text fill="#64748b" font-size="10" x="100" y="56" text-anchor="middle">Standard: 81.8 vs SC: 75.1</text>
+                  <text fill="#d97706" font-size="11" font-weight="600" x="100" y="78" text-anchor="middle">→ Better prompt wins</text>
+                </g>
+                <!-- Findings Summary Boxes -->
+                <g transform="translate(20, 460)">
+                  <rect width="350" height="80" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6" stroke-width="2" rx="10"/>
+                  <text fill="#1d4ed8" font-size="14" font-weight="600" x="175" y="26" text-anchor="middle">Finding: Self-Correction Fails</text>
+                  <text fill="#1e40af" font-size="12" x="175" y="46" text-anchor="middle">Without external feedback, LLMs cannot</text>
+                  <text fill="#1e40af" font-size="12" x="175" y="64" text-anchor="middle">reliably self-correct reasoning</text>
+                </g>
+                <g transform="translate(390, 460)">
+                  <rect width="350" height="80" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="2" rx="10"/>
+                  <text fill="#047857" font-size="14" font-weight="600" x="175" y="26" text-anchor="middle">Finding: Simpler Methods Work</text>
+                  <text fill="#065f46" font-size="12" x="175" y="46" text-anchor="middle">Self-consistency beats debate</text>
+                  <text fill="#065f46" font-size="12" x="175" y="64" text-anchor="middle">at matched inference cost</text>
+                </g>
+                <g transform="translate(760, 460)">
+                  <rect width="350" height="80" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b" stroke-width="2" rx="10"/>
+                  <text fill="#b45309" font-size="14" font-weight="600" x="175" y="26" text-anchor="middle">Finding: Prompt Confounds</text>
+                  <text fill="#92400e" font-size="12" x="175" y="46" text-anchor="middle">Prior gains from weak initial prompts,</text>
+                  <text fill="#92400e" font-size="12" x="175" y="64" text-anchor="middle">not true self-correction ability</text>
+                </g>
+                <!-- Main Takeaway -->
+                <g transform="translate(260, 565)">
+                  <rect width="680" height="70" fill="rgba(220, 38, 38, 0.12)" stroke="#dc2626" stroke-width="2" rx="12"/>
+                  <text fill="#b91c1c" font-size="16" font-weight="700" x="340" y="28" text-anchor="middle">Key Insight: No Intrinsic Self-Correction</text>
+                  <text fill="#991b1b" font-size="13" x="340" y="48" text-anchor="middle">LLMs cannot self-correct reasoning without external feedback;</text>
+                  <text fill="#991b1b" font-size="13" x="340" y="66" text-anchor="middle">they often change correct answers to incorrect ones</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div id="tree-diagram-2" class="tree-diagram-content">
+            <!-- Racial Bias in Medical Reports SVG Diagram -->
+            <div class="tree-diagram-wrapper">
+              <svg viewBox="0 0 1100 640" class="tree-svg-diagram">
+                <defs>
+                  <linearGradient id="rootGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#8b5cf6"/>
+                    <stop offset="100%" style="stop-color:#a78bfa"/>
+                  </linearGradient>
+                  <linearGradient id="branch1Gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6"/>
+                    <stop offset="100%" style="stop-color:#60a5fa"/>
+                  </linearGradient>
+                  <linearGradient id="branch2Gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#10b981"/>
+                    <stop offset="100%" style="stop-color:#34d399"/>
+                  </linearGradient>
+                  <linearGradient id="branch3Gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f59e0b"/>
+                    <stop offset="100%" style="stop-color:#fbbf24"/>
+                  </linearGradient>
+                  <linearGradient id="branch4Gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ec4899"/>
+                    <stop offset="100%" style="stop-color:#f472b6"/>
+                  </linearGradient>
+                </defs>
+                <!-- Branch Lines from Root to Depth-1 -->
+                <path d="M 550 90 C 550 130, 140 130, 140 165" stroke="#3b82f6" stroke-width="3" fill="none"/>
+                <path d="M 550 90 C 550 130, 410 130, 410 165" stroke="#10b981" stroke-width="3" fill="none"/>
+                <path d="M 550 90 C 550 130, 690 130, 690 165" stroke="#f59e0b" stroke-width="3" fill="none"/>
+                <path d="M 550 90 C 550 130, 960 130, 960 165" stroke="#ec4899" stroke-width="3" fill="none"/>
+                <!-- Branch 1 Lines to Leaves -->
+                <path d="M 140 225 C 140 255, 75 255, 75 285" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <path d="M 140 225 C 140 255, 205 255, 205 285" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                <!-- Branch 2 Lines to Leaves -->
+                <path d="M 410 225 C 410 255, 345 255, 345 285" stroke="#10b981" stroke-width="2" fill="none"/>
+                <path d="M 410 225 C 410 255, 475 255, 475 285" stroke="#10b981" stroke-width="2" fill="none"/>
+                <!-- Branch 3 Lines to Leaves -->
+                <path d="M 690 225 C 690 255, 625 255, 625 285" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                <path d="M 690 225 C 690 255, 755 255, 755 285" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                <!-- Branch 4 Lines to Leaves -->
+                <path d="M 960 225 C 960 255, 895 255, 895 285" stroke="#ec4899" stroke-width="2" fill="none"/>
+                <path d="M 960 225 C 960 255, 1025 255, 1025 285" stroke="#ec4899" stroke-width="2" fill="none"/>
+                <!-- Root Node -->
+                <g transform="translate(150, 10)">
+                  <rect width="800" height="80" fill="url(#rootGradient3)" rx="14"/>
+                  <text fill="#ffffff" font-size="16" font-weight="600" x="400" y="26" text-anchor="middle">Research Question</text>
+                  <text x="400" y="46" text-anchor="middle" fill="#f5f3ff" font-size="12">Do LLMs (GPT-3.5, GPT-4) exhibit racial/ethnic bias when</text>
+                  <text x="400" y="64" text-anchor="middle" fill="#f5f3ff" font-size="12">generating medical case reports? How can such bias be quantified?</text>
+                </g>
+                <!-- Branch 1: Bias-Probing Framework -->
+                <g transform="translate(15, 165)">
+                  <rect width="250" height="60" fill="url(#branch1Gradient3)" rx="10"/>
+                  <text x="125" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Design controlled bias-probing</text>
+                  <text x="125" y="42" text-anchor="middle" font-size="10" fill="#eff6ff" font-weight="600">framework (race injection)</text>
+                </g>
+                <!-- Branch 2: Diagnosis Bias -->
+                <g transform="translate(280, 165)">
+                  <rect width="250" height="60" fill="url(#branch2Gradient3)" rx="10"/>
+                  <text x="125" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Racial bias in diagnosis</text>
+                  <text x="125" y="42" text-anchor="middle" font-size="10" fill="#ecfdf5" font-weight="600">and patient info processing</text>
+                </g>
+                <!-- Branch 3: Cost/Hospitalization -->
+                <g transform="translate(545, 165)">
+                  <rect width="260" height="60" fill="url(#branch3Gradient3)" rx="10"/>
+                  <text x="130" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Quantify disparities in projected</text>
+                  <text x="130" y="42" text-anchor="middle" font-size="10" fill="#fef3c7" font-weight="600">costs &amp; hospitalization durations</text>
+                </g>
+                <!-- Branch 4: Survival & Decisiveness -->
+                <g transform="translate(835, 165)">
+                  <rect width="250" height="60" fill="url(#branch4Gradient3)" rx="10"/>
+                  <text x="125" y="24" text-anchor="middle" font-size="10" fill="#ffffff" font-weight="600">Survival predictions &amp;</text>
+                  <text x="125" y="42" text-anchor="middle" font-size="10" fill="#fce7f3" font-weight="600">model decisiveness</text>
+                </g>
+                <!-- Branch 1 Leaves -->
+                <g transform="translate(10, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">Patient Profiles</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">PMC-Patients</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">200 cases × 4 races</text>
+                  <text fill="#2563eb" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ Race controlled</text>
+                </g>
+                <g transform="translate(150, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#3b82f6" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">Report Generation</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">9-section template</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">10 gens per combo</text>
+                  <text fill="#2563eb" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ Standardized</text>
+                </g>
+                <!-- Branch 2 Leaves -->
+                <g transform="translate(290, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#10b981" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">Paraphrasing Bias</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">Fabricated details</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">16/200 biased cases</text>
+                  <text fill="#059669" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ Stereotypes added</text>
+                </g>
+                <g transform="translate(430, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#10b981" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">Diagnosis Bias</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">Disease-race links</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">21/200 disparities</text>
+                  <text fill="#059669" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ HIV↔Black</text>
+                </g>
+                <!-- Branch 3 Leaves -->
+                <g transform="translate(570, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">GPT-3.5 Disparities</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">Cost &amp; hospital days</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">White vs Black: 59%</text>
+                  <text fill="#d97706" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ Higher for White</text>
+                </g>
+                <g transform="translate(710, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">GPT-4 Disparities</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">More balanced cost</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">Similar hosp. trend</text>
+                  <text fill="#d97706" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ Partially mitigated</text>
+                </g>
+                <!-- Branch 4 Leaves -->
+                <g transform="translate(850, 285)">
+                  <rect width="130" height="80" fill="#ffffff" stroke="#ec4899" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="65" y="16" text-anchor="middle" font-weight="600">Survival Prediction</text>
+                  <text fill="#64748b" font-size="8" x="65" y="30" text-anchor="middle">200 deceased cases</text>
+                  <text fill="#64748b" font-size="8" x="65" y="44" text-anchor="middle">GPT-4: 29% accuracy</text>
+                  <text fill="#db2777" font-size="9" font-weight="600" x="65" y="64" text-anchor="middle">→ Overly optimistic</text>
+                </g>
+                <g transform="translate(990, 285)">
+                  <rect width="100" height="80" fill="#ffffff" stroke="#ec4899" stroke-width="2" rx="8"/>
+                  <text fill="#1e293b" font-size="9" x="50" y="16" text-anchor="middle" font-weight="600">Decisiveness</text>
+                  <text fill="#64748b" font-size="8" x="50" y="30" text-anchor="middle">Inconclusive rates</text>
+                  <text fill="#64748b" font-size="8" x="50" y="44" text-anchor="middle">GPT-4: 29-38%</text>
+                  <text fill="#db2777" font-size="9" font-weight="600" x="50" y="64" text-anchor="middle">→ More hedging</text>
+                </g>
+                <!-- Findings Summary Boxes -->
+                <g transform="translate(15, 390)">
+                  <rect width="250" height="65" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6" stroke-width="2" rx="10"/>
+                  <text fill="#1d4ed8" font-size="11" font-weight="600" x="125" y="20" text-anchor="middle">Finding: Stereotyped Content</text>
+                  <text fill="#1e40af" font-size="9" x="125" y="38" text-anchor="middle">LLMs add fabricated racial details</text>
+                  <text fill="#1e40af" font-size="9" x="125" y="52" text-anchor="middle">to patient descriptions</text>
+                </g>
+                <g transform="translate(285, 390)">
+                  <rect width="250" height="65" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="2" rx="10"/>
+                  <text fill="#047857" font-size="11" font-weight="600" x="125" y="20" text-anchor="middle">Finding: Disease-Race Links</text>
+                  <text fill="#065f46" font-size="9" x="125" y="38" text-anchor="middle">Diagnoses reflect stereotyped</text>
+                  <text fill="#065f46" font-size="9" x="125" y="52" text-anchor="middle">race-disease associations</text>
+                </g>
+                <g transform="translate(555, 390)">
+                  <rect width="250" height="65" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b" stroke-width="2" rx="10"/>
+                  <text fill="#b45309" font-size="11" font-weight="600" x="125" y="20" text-anchor="middle">Finding: Cost Disparities</text>
+                  <text fill="#92400e" font-size="9" x="125" y="38" text-anchor="middle">Higher costs/stays predicted</text>
+                  <text fill="#92400e" font-size="9" x="125" y="52" text-anchor="middle">more often for White patients</text>
+                </g>
+                <g transform="translate(825, 390)">
+                  <rect width="250" height="65" fill="rgba(236, 72, 153, 0.1)" stroke="#ec4899" stroke-width="2" rx="10"/>
+                  <text fill="#be185d" font-size="11" font-weight="600" x="125" y="20" text-anchor="middle">Finding: GPT-4 Trade-off</text>
+                  <text fill="#9d174d" font-size="9" x="125" y="38" text-anchor="middle">Fairer but less conclusive,</text>
+                  <text fill="#9d174d" font-size="9" x="125" y="52" text-anchor="middle">overly optimistic on survival</text>
+                </g>
+                <!-- Main Takeaway -->
+                <g transform="translate(210, 480)">
+                  <rect width="680" height="65" fill="rgba(220, 38, 38, 0.12)" stroke="#dc2626" stroke-width="2" rx="12"/>
+                  <text fill="#b91c1c" font-size="14" font-weight="700" x="340" y="24" text-anchor="middle">Key Insight: Racial Bias in Medical LLMs</text>
+                  <text fill="#991b1b" font-size="11" x="340" y="44" text-anchor="middle">GPT-3.5 and GPT-4 exhibit measurable racial biases in medical reports;</text>
+                  <text fill="#991b1b" font-size="11" x="340" y="60" text-anchor="middle">GPT-4 is fairer but hedges more and shows unrealistic optimism</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 <!-- 6. ERROR ANALYSIS SECTION -->
 <section class="section analysis-section" id="analysis">
   <div class="container is-max-desktop">
@@ -1382,6 +2486,529 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+});
+</script>
+
+<!-- Research Tree Visualization Script -->
+<script>
+const treePapers = [
+    {
+        paper: {
+            title: "Lost in the Middle: How Language Models Use Long Contexts",
+            authors: ["Nelson F. Liu", "Kevin Lin", "John Hewitt", "Ashwin Paranjape", "Michele Bevilacqua", "Fabio Petroni", "Percy Liang"],
+            venue: "arXiv (preprint)",
+            year: "2023"
+        },
+        problem_tree: {
+            "node": "Root: Do current long-context language models robustly use information anywhere in their input, or does performance depend on where relevant content appears?",
+            "type": "root node",
+            "description": "The paper probes how language models use long contexts by manipulating context length and the position of relevant information, introducing controlled evaluations (multi-document QA and a synthetic key-value task), analyses of model/Prompt factors, and a practical case study for open-domain QA.",
+            "evidence": "Abstract & Introduction summarize the goal and main finding (U-shaped performance with primacy/recency bias; degradation in the middle). See pp.1–3 and Fig.1 (p.1).",
+            "children": [
+                {
+                    "node": "Evaluate robustness via realistic multi-document QA under controlled context length and position",
+                    "type": "depth-1 node",
+                    "description": "Construct a QA setup where exactly one passage contains the answer and the rest are distractors; vary the number of passages (context length) and reorder to place the answer passage at different positions.",
+                    "evidence": "Task and controls detailed in Sec.2.1 with examples in Figs.2–4 (pp.3–4).",
+                    "children": [
+                        {
+                            "node": "Controlled multi-document QA design",
+                            "type": "depth-2 node",
+                            "description": "Use NQ-Open queries whose long answers are paragraphs; compile one answer passage and k−1 retrieved distractors; present distractors by decreasing relevance; manipulate answer passage position; vary k∈{10,20,30}.",
+                            "evidence": "Sec.2.1 and Figs.2–4 (pp.3–4).",
+                            "children": [
+                                {
+                                    "type": "leaf node",
+                                    "task": "Effect of answer position across 10/20/30 passages in multi-document QA",
+                                    "dataset": ["NaturalQuestions-Open (paragraph long-answer subset, 2,655 queries)", "Wikipedia (2018 dump)"],
+                                    "model_or_method": ["GPT-3.5-Turbo (0613)", "GPT-3.5-Turbo-16k (0613)", "Claude-1.3", "Claude-1.3-100k", "MPT-30B-Instruct (ALiBi)", "LongChat-13B-16k"],
+                                    "metrics": ["Accuracy (whether any gold answer string appears in the output)"],
+                                    "protocol_or_setup": "Greedy decoding with a standard prompt; answer passage placed at indexed positions; distractors ordered by decreasing relevance; total docs k∈{10 (~2K tokens), 20 (~4K), 30 (~6K)}; see Sec.2.2 for models and prompting.",
+                                    "evidence": { "figure": "Fig.5 (p.5)", "table": "Tables 5–7 (Appx. G, p.18)", "section": "Sec.2.3 (pp.5–6)" },
+                                    "conclusion": "All models exhibit a U-shaped curve: highest accuracy when the answer passage is at the beginning (primacy) or end (recency) and the lowest when it is in the middle."
+                                },
+                                {
+                                    "type": "leaf node",
+                                    "task": "Closed-book and oracle baselines for multi-document QA",
+                                    "dataset": ["NaturalQuestions-Open (same subset as above)"],
+                                    "model_or_method": ["Same model set as above"],
+                                    "metrics": ["Accuracy"],
+                                    "protocol_or_setup": "Closed-book: no passages provided; Oracle: only the single gold passage provided.",
+                                    "evidence": { "table": "Table 1 (p.5)", "section": "Sec.2.3 (p.5)" },
+                                    "conclusion": "Closed-book vs. oracle accuracies contextualize the ceiling; e.g., GPT-3.5-Turbo: 56.1% (closed-book) vs. 88.3% (oracle)."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "node": "Minimal retrieval ability: synthetic key-value (KV) retrieval test",
+                    "type": "depth-1 node",
+                    "description": "Strip away natural-language semantics using random UUIDs in JSON key-value pairs to test whether models can retrieve the value for a given key when contexts are long and the target appears in different positions.",
+                    "evidence": "Task motivation and setup in Sec.3 with example in Fig.6 (p.6).",
+                    "children": [
+                        {
+                            "type": "leaf node",
+                            "task": "Effect of target position and k on KV retrieval",
+                            "dataset": ["Synthetic UUID JSONs (500 examples per k)"],
+                            "model_or_method": ["GPT-3.5-Turbo / 16k", "Claude-1.3 / 100k", "MPT-30B-Instruct", "LongChat-13B-16k"],
+                            "metrics": ["Accuracy (exact match of value)"],
+                            "protocol_or_setup": "Key appears at specified ordinal positions; k∈{75 (~4K tokens), 140 (~8K), 300 (~16K)}; greedy decoding.",
+                            "evidence": { "figure": "Fig.7 (p.7)", "section": "Sec.3.2 (pp.6–7)" },
+                            "conclusion": "Claude variants are near-perfect across lengths. Other models again show a U-shape with worst accuracy when the key is in the middle."
+                        }
+                    ]
+                },
+                {
+                    "node": "Why the position sensitivity? Factor analyses",
+                    "type": "depth-1 node",
+                    "description": "Probe how architecture, query placement, and instruction fine-tuning affect position robustness.",
+                    "evidence": "Section 4 overview and sub-sections.",
+                    "children": [
+                        {
+                            "node": "Role of architecture: encoder-decoder vs decoder-only",
+                            "type": "depth-2 node",
+                            "description": "Compare Flan-UL2 / Flan-T5-XXL (encoder-decoder) to decoder-only models under the same MD-QA protocol.",
+                            "evidence": "Sec.4.1 with plots in Fig.8 (p.8).",
+                            "children": [
+                                {
+                                    "type": "leaf node",
+                                    "task": "Encoder-decoder models within vs beyond their training-time context length",
+                                    "dataset": ["NaturalQuestions-Open subset for MD-QA"],
+                                    "model_or_method": ["Flan-UL2", "Flan-T5-XXL", "Decoder-only baselines"],
+                                    "metrics": ["Accuracy by answer-passage position"],
+                                    "protocol_or_setup": "Evaluate at ~2K, ~4K, ~6K token contexts (10/20/30 docs) to test within and beyond training windows.",
+                                    "evidence": { "figure": "Fig.8 (p.8)", "section": "Sec.4.1 (pp.7–8)" },
+                                    "conclusion": "Encoder-decoder models are relatively robust to position when sequences fit within their encoder's training-time length."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        paper: {
+            title: "Large Language Models Cannot Self-Correct Reasoning Yet",
+            authors: ["Jie Huang", "Xinyun Chen", "Swaroop Mishra", "Huaixiu Steven Zheng", "Adams Wei Yu", "Xinying Song", "Denny Zhou"],
+            venue: "ICLR",
+            year: "2024"
+        },
+        problem_tree: {
+            "node": "Can large language models (LLMs) intrinsically self-correct their own reasoning—without any external feedback—and if not, why, and what evaluation pitfalls obscure this?",
+            "type": "root node",
+            "description": "The paper defines \"intrinsic self-correction\" (LLMs revise answers using only internal signals) and empirically examines whether it improves reasoning. It contrasts this with oracle-labeled self-correction, analyzes behavioral dynamics of revisions, compares to alternative multi-response methods at matched inference cost, and inspects prompt-design confounds.",
+            "evidence": "Abstract & §1–2 define scope and the intrinsic setting; main claim that performance often deteriorates after self-correction; overview of later sections (§3–5).",
+            "children": [
+                {
+                    "node": "Establish and evaluate intrinsic self-correction for reasoning tasks",
+                    "type": "depth-1 node",
+                    "description": "Lay out datasets, models, prompting protocol; first show oracle-gated self-correction as an upper bound; then remove labels so models must decide when/how to revise; probe different feedback prompts; analyze answer-change patterns.",
+                    "evidence": "§3.1 describes datasets (GSM8K, CommonSenseQA, HotpotQA), models (GPT-3.5/4/4-Turbo, Llama-2), and three-step prompting with up to two correction rounds; §3.2–3.3 report results and analyses.",
+                    "children": [
+                        {
+                            "node": "Oracle-gated self-correction as an upper-bound reference",
+                            "type": "depth-2 node",
+                            "description": "Use ground-truth labels to halt the correction loop whenever the model's answer is correct.",
+                            "evidence": "§3.2; Table 2 (p.4) shows gains with labels for GPT-3.5 and GPT-4.",
+                            "children": [
+                                {
+                                    "type": "leaf node",
+                                    "task": "Self-correct with oracle labels on reasoning benchmarks",
+                                    "dataset": ["GSM8K (test set, 1,319 problems)", "CommonSenseQA (dev set, 1,221 questions)", "HotpotQA (100-question subset)"],
+                                    "model_or_method": ["GPT-3.5-Turbo", "GPT-4", "Three-step: initial → feedback → revised answer; oracle stops loop"],
+                                    "metrics": ["Accuracy (GSM8K, CommonSenseQA)", "Exact Match (HotpotQA)"],
+                                    "protocol_or_setup": "Oracle label used each step to verify correctness and stop; otherwise proceed.",
+                                    "evidence": { "table": "Table 2 (p.4)", "section": "Sec. 3.2" },
+                                    "conclusion": "With oracle labels, performance increases markedly (e.g., GPT-3.5: GSM8K 75.9→84.3), indicating that improvements hinge on external correctness signals."
+                                }
+                            ]
+                        },
+                        {
+                            "node": "Intrinsic self-correction without labels across models/datasets",
+                            "type": "depth-2 node",
+                            "description": "Remove access to labels; the LLM must judge whether to revise/retain answers using only its own feedback.",
+                            "evidence": "§3.2; Tables 3–4 (pp.4–5) report accuracies and #calls.",
+                            "children": [
+                                {
+                                    "type": "leaf node",
+                                    "task": "Intrinsic self-correction on GPT-3.5 and GPT-4",
+                                    "dataset": ["GSM8K", "CommonSenseQA", "HotpotQA"],
+                                    "model_or_method": ["GPT-3.5-Turbo (full eval sets)", "GPT-4 (200-sample per dataset)", "Three-step intrinsic self-correction (no labels)"],
+                                    "metrics": ["Accuracy (GSM8K, CommonSenseQA)", "Exact Match (HotpotQA)"],
+                                    "protocol_or_setup": "Max two correction rounds (3 and 5 model calls); temperature 1; models decide to keep/change answers.",
+                                    "evidence": { "table": "Table 3 (p.4)", "section": "Sec. 3.2; setup in Sec. 3.1" },
+                                    "conclusion": "Accuracy drops after self-correction: GPT-3.5 (GSM8K 75.9→75.1→74.7) and GPT-4 (GSM8K 95.5→91.5→89.0)."
+                                }
+                            ]
+                        },
+                        {
+                            "node": "Behavioral analysis: how answers change under intrinsic self-correction",
+                            "type": "depth-2 node",
+                            "description": "Quantify whether revisions tend to fix wrong answers or corrupt correct ones; provide qualitative cases.",
+                            "evidence": "§3.3; Figure 1 (p.6) summarizes change categories across models/datasets.",
+                            "children": [
+                                {
+                                    "type": "leaf node",
+                                    "task": "Quantify answer-change categories after two rounds",
+                                    "dataset": ["GSM8K", "CommonSenseQA"],
+                                    "model_or_method": ["GPT-3.5", "GPT-4", "GPT-4-Turbo", "Llama-2"],
+                                    "metrics": ["Proportion per category: No Change; Correct→Incorrect; Incorrect→Correct; Incorrect→Incorrect"],
+                                    "protocol_or_setup": "Compute distribution of change categories after two intrinsic self-correction rounds.",
+                                    "evidence": { "figure": "Figure 1 (p.6)", "section": "Sec. 3.3" },
+                                    "conclusion": "Models often retain initial answers; when they do change, they are more likely to flip a correct answer to an incorrect one."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "node": "Compare self-correction to alternatives at matched inference cost",
+                    "type": "depth-1 node",
+                    "description": "Since self-correction uses extra calls, compare debate-style multi-agent critique to self-consistency when controlling for the number of model generations.",
+                    "evidence": "§4 sets up a fair-cost comparison; Table 7 (p.7) juxtaposes multi-agent debate with self-consistency on GSM8K.",
+                    "children": [
+                        {
+                            "type": "leaf node",
+                            "task": "GSM8K: Multi-Agent Debate vs Self-Consistency",
+                            "dataset": ["GSM8K (full test set)"],
+                            "model_or_method": ["gpt-3.5-turbo-0301", "Multi-Agent Debate (3 agents; 2 rounds)", "Self-Consistency (majority vote with 3/6/9 samples)"],
+                            "metrics": ["Accuracy"],
+                            "protocol_or_setup": "Use the exact debate prompt from Du et al. (2023); match self-consistency to the same #responses.",
+                            "evidence": { "table": "Table 7 (p.7)", "section": "Sec. 4" },
+                            "conclusion": "Both exceed standard prompting, but debate does not beat self-consistency at the same cost."
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        paper: {
+            title: "Unmasking and Quantifying Racial Bias of Large Language Models in Medical Report Generation",
+            authors: ["Yifan Yang", "Xiaoyu Liu", "Qiao Jin", "Furong Huang", "Zhiyong Lu"],
+            venue: "Communications Medicine",
+            year: "2024"
+        },
+        problem_tree: {
+            "node": "Root: Do state-of-the-art LLMs (GPT-3.5-turbo, GPT-4) exhibit racial/ethnic bias when generating medical case reports, and how can such bias be quantified and qualitatively characterized?",
+            "type": "root node",
+            "description": "The paper investigates whether LLMs inherit and express racial/ethnic biases in medical report generation and proposes methods to reveal, quantify, and analyze such biases across diagnosis, treatment, cost, hospitalization, and prognosis.",
+            "evidence": "Title and abstract define the aim to unmask and quantify racial bias in LLM-generated medical reports; Introduction motivates the need in clinical contexts. (pp. 1–2, Abstract/Background).",
+            "children": [
+                {
+                    "node": "Design a controlled bias-probing framework that holds clinical content constant and varies only racial/ethnic identifiers.",
+                    "type": "depth-1 node",
+                    "description": "Establish a pipeline to create hypothetical patient profiles from real cases, remove original race/ethnicity, inject target racial labels, and prompt LLMs to generate standardized multi-section reports for analysis.",
+                    "evidence": "Methods—Dataset and Method overview; Fig. 1 workflow shows steps a–e. (pp. 2–3; Fig. 1 on p. 2).",
+                    "children": [
+                        {
+                            "type": "leaf node",
+                            "task": "Construct hypothetical patient profiles from PMC-Patients with race removed and re-injected",
+                            "dataset": ["PMC-Patients (167,000 patient summaries); 200 recent cases for main reports; 200 deceased cases for survival analysis"],
+                            "model_or_method": ["GPT-3.5-turbo-0301 and GPT-4-0613 (Azure) used for extraction and verification"],
+                            "metrics": ["Not a quantitative metric; pipeline specification"],
+                            "protocol_or_setup": "Remove race (Prompt B), inject target race (Prompt C); ensure recent articles to reduce memorization; manual MD review of condition commonality.",
+                            "evidence": { "figure": "Fig. 1 (workflow, p. 2)", "section": "Methods—Dataset; Method overview" },
+                            "conclusion": "A standardized, race-controlled set of hypothetical profiles was established for probing bias."
+                        }
+                    ]
+                },
+                {
+                    "node": "Do LLMs exhibit racial bias in patient information processing and diagnosis generation?",
+                    "type": "depth-1 node",
+                    "description": "Assess whether paraphrasing of patient backgrounds and diagnoses differ by race when clinical presentation is held constant.",
+                    "evidence": "Results—'Current LLMs present racial biases in medical diagnosis and patient information processing'. (p. 4).",
+                    "children": [
+                        {
+                            "type": "leaf node",
+                            "task": "Manual review of paraphrased patient descriptions and case history across races",
+                            "dataset": ["200 main patient cases; 3 generations per combination for manual inspection"],
+                            "model_or_method": ["GPT-3.5-turbo; qualitative annotators (n=3)"],
+                            "metrics": ["Counts of biased/fabricated details (e.g., 16/200)"],
+                            "protocol_or_setup": "Section-wise horizontal comparison across four racial labels for each patient; collect annotator comments.",
+                            "evidence": { "section": "Results—Current LLMs present racial biases…; Supplementary Table 2" },
+                            "conclusion": "GPT-3.5-turbo added stereotyped or fabricated background details more often for certain racial groups."
+                        },
+                        {
+                            "type": "leaf node",
+                            "task": "Manual analysis of generated diagnosis sections across races",
+                            "dataset": ["200 main patient cases; 3 generations per combination"],
+                            "model_or_method": ["GPT-3.5-turbo; human qualitative coding"],
+                            "metrics": ["Count and characterization of race-skewed diagnoses (21/200)"],
+                            "protocol_or_setup": "Compare diagnosis sections across race-variants for each patient.",
+                            "evidence": { "section": "Results—Current LLMs present racial biases…; Supplementary Table 2" },
+                            "conclusion": "LLM diagnostic outputs reflected stereotyped race–disease associations and severity patterns."
+                        }
+                    ]
+                },
+                {
+                    "node": "Quantify racial disparities in projected costs and hospitalization durations.",
+                    "type": "depth-1 node",
+                    "description": "Measure whether projected cost and length of stay differ pair-wise across racial groups and validate with statistical tests.",
+                    "evidence": "Results—quantitative comparisons summarized in Fig. 2; Statistics and reproducibility (z-tests). (p. 4; Fig. 2 on p. 4).",
+                    "children": [
+                        {
+                            "type": "leaf node",
+                            "task": "Projected hospitalization duration comparisons (pair-wise win rates) with GPT-3.5-turbo",
+                            "dataset": ["200 main cases × 4 races; 10 generations per combination"],
+                            "model_or_method": ["GPT-3.5-turbo-0301; rule-based extraction"],
+                            "metrics": ["Pair-wise win rate (e.g., White vs Black 58.5% vs 41.5%); two-sided z-tests; p-values"],
+                            "protocol_or_setup": "High-temperature report generation; extract 'Expected hospitalized days' and compare across race pairs.",
+                            "evidence": { "figure": "Fig. 2a (p. 4)", "section": "Statistics and reproducibility" },
+                            "conclusion": "GPT-3.5-turbo more frequently predicts longer stays for white patients across pairs, with several comparisons statistically significant."
+                        },
+                        {
+                            "type": "leaf node",
+                            "task": "Projected cost comparisons (pair-wise win rates) with GPT-3.5-turbo",
+                            "dataset": ["Same 200 main cases × 4 races; 10 gens per combo"],
+                            "model_or_method": ["GPT-3.5-turbo-0301; numeric extraction"],
+                            "metrics": ["Pair-wise win rate for higher cost; z-tests with p-values"],
+                            "protocol_or_setup": "Extract 'Expected cost in dollars if no insurance'; compute pair-wise win rates and run two-sided z-tests.",
+                            "evidence": { "figure": "Fig. 2b (p. 4)", "section": "Statistics and reproducibility" },
+                            "conclusion": "Costs are projected higher more often for white patients than others; ranking by win rate: white > Black > Hispanic > Asian."
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+];
+
+let currentTreePaper = 0;
+
+function getTreeNodeClass(type) {
+    const typeMap = {
+        'root node': 'tree-root-node',
+        'depth-1 node': 'tree-depth-1-node',
+        'depth-2 node': 'tree-depth-2-node',
+        'depth-3 node': 'tree-depth-3-node',
+        'leaf node': 'tree-leaf-node'
+    };
+    return typeMap[type] || 'tree-depth-1-node';
+}
+
+function renderTreeEvidence(evidence) {
+    if (typeof evidence === 'string') {
+        return `<div class="tree-node-evidence">📖 ${evidence}</div>`;
+    }
+    if (typeof evidence === 'object') {
+        let refs = [];
+        if (evidence.figure) refs.push(`📊 ${evidence.figure}`);
+        if (evidence.table) refs.push(`📋 ${evidence.table}`);
+        if (evidence.section) refs.push(`📖 ${evidence.section}`);
+        if (refs.length === 0) return '';
+        return `<div class="tree-evidence-refs">${refs.map(r => `<span class="tree-evidence-ref">${r}</span>`).join('')}</div>`;
+    }
+    return '';
+}
+
+function renderTreeLeafNode(node) {
+    let html = `<div class="tree-leaf-details">`;
+    
+    html += `<div class="tree-detail-row"><span class="tree-detail-label">Task:</span><span class="tree-detail-value">${node.task}</span></div>`;
+    
+    if (node.dataset && node.dataset.length) {
+        html += `<div class="tree-detail-row"><span class="tree-detail-label">Dataset:</span><span class="tree-detail-value">${node.dataset.map(d => `<span class="tree-tag">${d}</span>`).join(' ')}</span></div>`;
+    }
+    
+    if (node.model_or_method && node.model_or_method.length) {
+        html += `<div class="tree-detail-row"><span class="tree-detail-label">Models:</span><span class="tree-detail-value">${node.model_or_method.map(m => `<span class="tree-tag">${m}</span>`).join(' ')}</span></div>`;
+    }
+    
+    if (node.metrics && node.metrics.length) {
+        html += `<div class="tree-detail-row"><span class="tree-detail-label">Metrics:</span><span class="tree-detail-value">${node.metrics.join(', ')}</span></div>`;
+    }
+    
+    if (node.protocol_or_setup) {
+        html += `<div class="tree-detail-row"><span class="tree-detail-label">Setup:</span><span class="tree-detail-value">${node.protocol_or_setup}</span></div>`;
+    }
+    
+    if (node.evidence) {
+        html += renderTreeEvidence(node.evidence);
+    }
+    
+    if (node.conclusion) {
+        html += `<div class="tree-conclusion-box"><div class="tree-label">Conclusion</div><div class="tree-text">${node.conclusion}</div></div>`;
+    }
+    
+    html += `</div>`;
+    return html;
+}
+
+function countTreeNodes(node) {
+    let counts = { total: 1, leaves: 0, depth1: 0, depth2: 0 };
+    if (node.type === 'leaf node') counts.leaves = 1;
+    if (node.type === 'depth-1 node') counts.depth1 = 1;
+    if (node.type === 'depth-2 node') counts.depth2 = 1;
+    
+    if (node.children) {
+        for (const child of node.children) {
+            const childCounts = countTreeNodes(child);
+            counts.total += childCounts.total;
+            counts.leaves += childCounts.leaves;
+            counts.depth1 += childCounts.depth1;
+            counts.depth2 += childCounts.depth2;
+        }
+    }
+    return counts;
+}
+
+function renderTreeNode(node, depth = 0) {
+    const isLeaf = node.type === 'leaf node';
+    const hasChildren = node.children && node.children.length > 0;
+    const nodeClass = getTreeNodeClass(node.type);
+    const title = node.node || node.task || 'Untitled';
+    
+    let html = `<div class="tree-node ${nodeClass}${depth > 0 ? ' collapsed' : ''}" data-depth="${depth}">`;
+    html += `<div class="tree-node-header" onclick="toggleTreeNode(this.parentElement)">`;
+    html += `<span class="tree-toggle-icon">${(hasChildren || isLeaf) ? '▼' : ''}</span>`;
+    html += `<span class="tree-node-type">${node.type}</span>`;
+    html += `<span class="tree-node-title">${title}</span>`;
+    html += `</div>`;
+    
+    html += `<div class="tree-node-content">`;
+    
+    if (isLeaf) {
+        html += renderTreeLeafNode(node);
+    } else {
+        if (node.description) {
+            html += `<div class="tree-node-description">${node.description}</div>`;
+        }
+        if (node.evidence) {
+            html += renderTreeEvidence(node.evidence);
+        }
+    }
+    
+    if (hasChildren) {
+        html += `<div class="tree-children">`;
+        for (const child of node.children) {
+            html += renderTreeNode(child, depth + 1);
+        }
+        html += `</div>`;
+    }
+    
+    html += `</div>`;
+    html += `</div>`;
+    
+    return html;
+}
+
+function renderTreePaper(index) {
+    const data = treePapers[index];
+    const counts = countTreeNodes(data.problem_tree);
+    
+    let html = `
+        <div class="tree-header">
+            <h3>${data.paper.title}</h3>
+            <div class="tree-authors">${data.paper.authors.join(', ')}</div>
+            <div class="tree-venue">${data.paper.venue}, ${data.paper.year}</div>
+        </div>
+        <div class="tree-stats-bar">
+            <div class="tree-stat-item">
+                <div class="tree-stat-value">${counts.total}</div>
+                <div class="tree-stat-label">Total Nodes</div>
+            </div>
+            <div class="tree-stat-item">
+                <div class="tree-stat-value">${counts.depth1}</div>
+                <div class="tree-stat-label">Main Branches</div>
+            </div>
+            <div class="tree-stat-item">
+                <div class="tree-stat-value">${counts.leaves}</div>
+                <div class="tree-stat-label">Experiments</div>
+            </div>
+        </div>
+        <div class="tree-container">
+            ${renderTreeNode(data.problem_tree)}
+        </div>
+    `;
+    
+    return html;
+}
+
+let currentTreeView = 'interactive';
+
+function switchTreePaper(index) {
+    currentTreePaper = index;
+    
+    // Update tabs
+    document.querySelectorAll('.tree-paper-tab').forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+    });
+    
+    // Update interactive tree content
+    document.querySelectorAll('.tree-paper-content').forEach((content, i) => {
+        content.classList.toggle('active', i === index);
+    });
+    
+    // Update diagram content
+    document.querySelectorAll('.tree-diagram-content').forEach((content, i) => {
+        content.classList.toggle('active', i === index);
+    });
+}
+
+function switchTreeView(view) {
+    currentTreeView = view;
+    
+    // Update view toggle buttons
+    document.querySelectorAll('.tree-view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    
+    // Show/hide the appropriate view container
+    const interactiveView = document.getElementById('tree-interactive-view');
+    const diagramView = document.getElementById('tree-diagram-view');
+    const sidebar = document.getElementById('tree-sidebar');
+    
+    if (view === 'interactive') {
+        interactiveView.classList.add('active');
+        diagramView.classList.remove('active');
+        sidebar.style.display = 'block';
+    } else {
+        interactiveView.classList.remove('active');
+        diagramView.classList.add('active');
+        sidebar.style.display = 'none';
+    }
+}
+
+function toggleTreeNode(nodeEl) {
+    nodeEl.classList.toggle('collapsed');
+}
+
+function expandAllTree() {
+    const activeContent = document.querySelector('.tree-paper-content.active');
+    activeContent.querySelectorAll('.tree-node').forEach(n => n.classList.remove('collapsed'));
+}
+
+function collapseAllTree() {
+    const activeContent = document.querySelector('.tree-paper-content.active');
+    activeContent.querySelectorAll('.tree-node').forEach(n => {
+        if (n.dataset.depth > 0) n.classList.add('collapsed');
+    });
+}
+
+function expandTreeToDepth(maxDepth) {
+    const activeContent = document.querySelector('.tree-paper-content.active');
+    activeContent.querySelectorAll('.tree-node').forEach(n => {
+        const depth = parseInt(n.dataset.depth);
+        if (depth <= maxDepth) {
+            n.classList.remove('collapsed');
+        } else {
+            n.classList.add('collapsed');
+        }
+    });
+}
+
+// Initialize all tree papers on page load
+document.addEventListener('DOMContentLoaded', function() {
+    treePapers.forEach((_, index) => {
+        const container = document.getElementById(`tree-paper-${index}`);
+        if (container) {
+            container.innerHTML = renderTreePaper(index);
+        }
+    });
 });
 </script>
 
