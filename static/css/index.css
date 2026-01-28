@@ -173,6 +173,40 @@ body {
   border-color: #333;
 }
 
+.link-block .button.coming-soon-btn {
+  position: relative;
+  cursor: default;
+}
+
+.link-block .button.coming-soon-btn .icon,
+.link-block .button.coming-soon-btn .btn-text {
+  transition: opacity 0.2s ease;
+}
+
+.link-block .button.coming-soon-btn .btn-coming-soon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  font-size: 0.85em;
+}
+
+.link-block .button.coming-soon-btn:hover {
+  background: #888;
+  border-color: #888;
+}
+
+.link-block .button.coming-soon-btn:hover .icon,
+.link-block .button.coming-soon-btn:hover .btn-text {
+  opacity: 0;
+}
+
+.link-block .button.coming-soon-btn:hover .btn-coming-soon {
+  opacity: 1;
+}
+
 .link-block:first-child .button.is-dark {
   background: var(--fire-orange);
   border-color: var(--fire-orange);
