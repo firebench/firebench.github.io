@@ -1082,10 +1082,9 @@ body {
 .announcement-badge {
   background: var(--fire-orange);
   color: #FFFFFF;
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
 }
@@ -1100,6 +1099,18 @@ body {
 .announcement-text strong {
   font-weight: 700;
   color: var(--fire-orange);
+}
+
+.announcement-link {
+  color: var(--fire-orange);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.announcement-link:hover {
+  color: var(--fire-red);
 }
 
 .announcement-highlight {
