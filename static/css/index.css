@@ -207,12 +207,12 @@ body {
   opacity: 1;
 }
 
-.link-block:first-child .button.is-dark {
+.link-block .button.is-dark {
   background: var(--fire-orange);
   border-color: var(--fire-orange);
 }
 
-.link-block:first-child .button.is-dark:hover {
+.link-block .button.is-dark:hover {
   background: #e55a2b;
   border-color: #e55a2b;
 }
